@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { JsonLd } from "@/components/json-ld";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,35 +15,68 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.sleepyleo.com"), // Change to your actual domain
   title: {
-    default: "SleepyLeo Hub | Fullstack Dev & Professional Oversleeper",
-    template: "%s | SleepyLeo Hub",
+    default: "SleepyLeo - Fullstack Developer Portfolio | Professional Oversleeper",
+    template: "%s | SleepyLeo",
   },
   description:
-    "Portfolio of a Fullstack Developer who codes during the day and dreams in TypeScript at night. Warning: May contain excessive caffeine and sarcasm.",
+    "SleepyLeo's Portfolio - A Fullstack Developer who codes during the day and dreams in TypeScript at night. Explore projects, skills, and more. Warning: May contain excessive caffeine and sarcasm.",
   keywords: [
+    "sleepyleo",
+    "sleepy leo",
+    "sleepyleo portfolio",
+    "sleepyleo developer",
     "fullstack developer",
     "portfolio",
     "typescript",
     "react",
     "next.js",
     "web development",
+    "software engineer",
   ],
-  authors: [{ name: "SleepyLeo" }],
+  authors: [{ name: "SleepyLeo", url: "https://www.sleepyleo.com" }],
+  creator: "SleepyLeo",
+  publisher: "SleepyLeo",
   openGraph: {
-    title: "SleepyLeo Hub",
-    description: "Fullstack Dev | Professional Oversleeper | Bugs' Worst Nightmare",
+    title: "SleepyLeo - Fullstack Developer Portfolio",
+    description: "SleepyLeo's Portfolio - Fullstack Dev | Professional Oversleeper | Bugs' Worst Nightmare",
     type: "website",
     locale: "en_US",
+    url: "https://www.sleepyleo.com",
+    siteName: "SleepyLeo",
+    images: [
+      {
+        url: "/og-image.png", // Create this image for social sharing
+        width: 1200,
+        height: 630,
+        alt: "SleepyLeo Portfolio",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SleepyLeo Hub",
-    description: "Fullstack Dev | Professional Oversleeper | Bugs' Worst Nightmare",
+    title: "SleepyLeo - Fullstack Developer Portfolio",
+    description: "SleepyLeo's Portfolio - Fullstack Dev | Professional Oversleeper | Bugs' Worst Nightmare",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Add these after setting up Google Search Console
+    // google: "your-google-verification-code",
+  },
+  alternates: {
+    canonical: "https://www.sleepyleo.com",
   },
 };
 
@@ -53,6 +87,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <JsonLd />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-900`}
       > 
