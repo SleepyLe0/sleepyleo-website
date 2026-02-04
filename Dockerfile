@@ -1,33 +1,30 @@
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM oven/bun:1-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install bun for faster package installation
-RUN npm install -g bun
-
 # Copy package files
-COPY package.json bun.lock* package-lock.json* yarn.lock* ./
+COPY package.json bun.lock* ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile || npm ci
+RUN bun install --frozen-lockfile
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM oven/bun:1-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN bunx prisma generate
 
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN bun run build
 
 # Stage 3: Runner
-FROM node:20-alpine AS runner
+FROM oven/bun:1-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -66,4 +63,3 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["./docker-entrypoint.sh"]
-
