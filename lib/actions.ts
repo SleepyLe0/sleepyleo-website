@@ -130,10 +130,10 @@ async function executeRemoteCommand(command: string): Promise<{
         conn.end();
         resolve({
           success: false,
-          error: "Command timed out after 30 seconds",
+          error: "Command timed out after 5 minutes",
         });
       }
-    }, 30000);
+    }, 300000);
 
     // Spawn cloudflared to create a tunnel to the SSH server
     const cloudflared = spawn("cloudflared", ["access", "ssh", "--hostname", VM_HOST!], {
