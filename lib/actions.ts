@@ -140,14 +140,42 @@ async function executeRemoteCommand(command: string): Promise<{
       stdio: ["pipe", "pipe", "pipe"],
     });
 
+    let cloudflaredClosed = false;
+
+    // Handle cloudflared stdin errors (EPIPE)
+    cloudflared.stdin.on("error", (err) => {
+      if ((err as NodeJS.ErrnoException).code === "EPIPE") {
+        cloudflaredClosed = true;
+        // Silently ignore EPIPE - cloudflared has closed
+      } else {
+        console.error("cloudflared stdin error:", err);
+      }
+    });
+
     // Create a duplex stream that wraps cloudflared's stdin/stdout
     const duplexStream = new Duplex({
-      read() {},
+      read() { },
       write(chunk, encoding, callback) {
-        cloudflared.stdin.write(chunk, encoding, callback);
+        if (cloudflaredClosed || !cloudflared.stdin.writable) {
+          callback(new Error("cloudflared connection closed"));
+          return;
+        }
+        try {
+          cloudflared.stdin.write(chunk, encoding, callback);
+        } catch (err) {
+          callback(err as Error);
+        }
       },
       final(callback) {
-        cloudflared.stdin.end(callback);
+        if (cloudflaredClosed || !cloudflared.stdin.writable) {
+          callback();
+          return;
+        }
+        try {
+          cloudflared.stdin.end(callback);
+        } catch {
+          callback();
+        }
       },
     });
 
@@ -375,9 +403,11 @@ export async function getSystemHealth(): Promise<{
 
   try {
     // Execute a single command that outputs all health info as JSON
+    // Using /proc/stat for more reliable CPU reading
     const healthCommand = `
+      cpu_usage=$(awk '/^cpu / {idle=$5; total=$2+$3+$4+$5+$6+$7+$8; print int(100*(total-idle)/total)}' /proc/stat 2>/dev/null || echo "0")
       echo "{
-        \\"cpu\\": $(top -bn1 | grep 'Cpu(s)' | awk '{print int($2)}'),
+        \\"cpu\\": $cpu_usage,
         \\"memTotal\\": $(free -b | awk '/Mem:/ {print $2}'),
         \\"memUsed\\": $(free -b | awk '/Mem:/ {print $3}'),
         \\"uptime\\": $(cat /proc/uptime | awk '{print int($1)}'),

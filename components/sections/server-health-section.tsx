@@ -19,7 +19,7 @@ export function ServerHealthSection() {
           </h2>
           <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
             Real-time monitoring of the hamster wheel that powers this site.
-            Updates every 5 seconds because watching paint dry is too exciting.
+            Updates every 5 minutes because watching paint dry is too exciting.
           </p>
         </motion.div>
 

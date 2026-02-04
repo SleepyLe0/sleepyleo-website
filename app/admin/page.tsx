@@ -21,13 +21,25 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-neutral-950 py-12 px-4">
       <div className="max-w-5xl mx-auto flex flex-col gap-5">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group"
-        >
-          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-medium">Back to Home</span>
-        </Link>
+        <div className="w-full flex justify-between items-center">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group w-fit"
+          >
+            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-medium">Back to Home</span>
+          </Link>
+          <Link 
+            href="/admin/intern"
+            className="group flex items-center gap-2 rounded-lg border border-white/10 bg-neutral-900/50 px-4 py-2 transition-all hover:border-indigo-500/50 hover:bg-indigo-900/10"
+          >
+            <div className="inline-flex rounded-md bg-indigo-500/20 p-1.5 text-indigo-400 group-hover:text-indigo-300">
+              <Bot className="h-4 w-4" />
+            </div>
+            <span className="text-sm font-medium text-white">AI Intern</span>
+            <ArrowRight className="h-4 w-4 text-indigo-400 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5" />
+          </Link>
+        </div>
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
@@ -37,25 +49,9 @@ export default async function AdminPage() {
               Import projects from GitHub, manage visibility, and customize details.
             </p>
           </div>
-          <LogoutButton />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Link 
-            href="/admin/intern"
-            className="group relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900/50 p-6 transition-all hover:border-indigo-500/50 hover:bg-indigo-900/10"
-          >
-            <div className="mb-4 inline-flex rounded-lg bg-indigo-500/20 p-2 text-indigo-400 group-hover:text-indigo-300">
-              <Bot className="h-6 w-6" />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold text-white">AI Intern</h3>
-            <p className="text-sm text-neutral-400">
-              Use your AI assistant to run commands, check system status, and help with development tasks.
-            </p>
-            <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100">
-              <ArrowRight className="h-5 w-5 text-indigo-400" />
-            </div>
-          </Link>
+          <div className="flex flex-col items-end gap-2">
+            <LogoutButton />
+          </div>
         </div>
 
         <h2 className="text-xl font-semibold text-white mb-4">Manage Projects</h2>

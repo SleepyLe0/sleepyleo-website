@@ -60,7 +60,7 @@ export function HealthDashboard() {
 
   useEffect(() => {
     fetchHealth();
-    const interval = setInterval(fetchHealth, 5000); // Poll every 5 seconds
+    const interval = setInterval(fetchHealth, 300000); // Poll every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
