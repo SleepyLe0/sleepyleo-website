@@ -34,9 +34,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Install cloudflared for SSH tunneling (optional - continues if fails)
-RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community cloudflared \
-    || echo "Warning: cloudflared installation failed - SSH tunneling will not work"
+# Install cloudflared for SSH tunneling (with retries for network reliability)
+RUN apk add --no-cache wget \
+    && wget --tries=5 --timeout=30 -q -O /usr/local/bin/cloudflared \
+       https://github.com/cloudflare/cloudflared/releases/download/2024.12.2/cloudflared-linux-amd64 \
+    && chmod +x /usr/local/bin/cloudflared \
+    && apk del wget \
+    || echo "Warning: cloudflared installation failed"
 
 # Copy built assets with correct ownership
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
