@@ -36,6 +36,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Install cloudflared for SSH tunneling
+RUN apk add --no-cache curl \
+    && curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
+    && chmod +x /usr/local/bin/cloudflared \
+    && apk del curl
+
 # Copy built assets with correct ownership
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
