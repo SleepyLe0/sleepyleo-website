@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: "A collection of projects that somehow work. Most of the time.",
 };
 
-// Revalidate every 5 minutes to keep GitHub stats fresh
-export const revalidate = 300;
+// Force dynamic rendering to always show fresh data
+export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   // First try to get projects from database

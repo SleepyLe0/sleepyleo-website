@@ -3,8 +3,8 @@ import { ProjectsSection } from "@/components/sections/projects-section";
 import { ServerHealthSection } from "@/components/sections/server-health-section";
 import { getProjects, syncGitHubProjects } from "@/lib/actions";
 
-// Revalidate every 5 minutes to keep GitHub stats fresh
-export const revalidate = 300;
+// Force dynamic rendering to always show fresh data
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // First try to get projects from database
