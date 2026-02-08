@@ -96,12 +96,12 @@ export function Hero() {
         </motion.div>
 
         {/* Main Heading */}
-        <motion.div
+        <motion.h1
           variants={itemVariants}
           className="text-3xl md:text-7xl font-bold dark:text-white text-center"
         >
           Hey, I&apos;m <span className="text-indigo-500 bg-linear-to-r from-indigo-500 to-purple-500 bg-clip-text">SleepyLeo</span>
-        </motion.div>
+        </motion.h1>
 
         {/* Flip Words */}
         <motion.div

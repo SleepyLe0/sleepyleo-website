@@ -234,6 +234,7 @@ export function ChatUI() {
                         alt="reaction"
                         width={200}
                         height={144}
+                        sizes="200px"
                         className="h-36 w-auto rounded-lg mb-3"
                         unoptimized
                       />

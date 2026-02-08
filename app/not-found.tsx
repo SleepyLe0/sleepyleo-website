@@ -15,6 +15,7 @@ export default function NotFound() {
             alt="John Travolta looking confused"
             width={256}
             height={256}
+            sizes="256px"
             className="w-64 h-64 object-contain mx-auto rounded-lg"
             unoptimized
           />

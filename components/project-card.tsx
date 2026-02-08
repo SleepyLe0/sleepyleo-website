@@ -76,13 +76,13 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
     >
       <WobbleCard className="p-0 sm:p-0" containerClassName={`col-span-1 min-h-[300px] ${colorClass}`}>
         {project.memeUrl && (
-          <div className="overflow-hidden rounded-t-lg w-full">
+          <div className="overflow-hidden rounded-t-lg w-full relative aspect-[3/1]">
             <Image
               src={project.memeUrl}
               alt={`${project.name} meme`}
-              width={400}
-              height={128}
-              className="w-full h-32 object-cover opacity-80"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover opacity-80"
               unoptimized
             />
           </div>

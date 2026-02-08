@@ -106,14 +106,16 @@ export function HealthDashboard() {
                   Nothing to see here. Move along.
                 </p>
               </div>
-              <Image
-                src={THIS_IS_FINE_GIF}
-                alt="This is fine"
-                width={256}
-                height={160}
-                className="w-full md:w-64 h-40 object-cover"
-                unoptimized
-              />
+              <div className="relative w-full md:w-64 aspect-video">
+                <Image
+                  src={THIS_IS_FINE_GIF}
+                  alt="This is fine"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 256px"
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -131,14 +133,16 @@ export function HealthDashboard() {
                   Server is running smoothly. The hamsters powering this thing are well-fed.
                 </p>
               </div>
-              <Image
-                src={EVERYTHING_OK_GIF}
-                alt="Everything is OK"
-                width={256}
-                height={160}
-                className="w-full md:w-64 h-40 object-cover"
-                unoptimized
-              />
+              <div className="relative w-full md:w-64 aspect-video">
+                <Image
+                  src={EVERYTHING_OK_GIF}
+                  alt="Everything is OK"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 256px"
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
