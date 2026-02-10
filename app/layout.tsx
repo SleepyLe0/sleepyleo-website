@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.sleepyleo.com"), // Change to your actual domain
   title: {
-    default: "SleepyLeo - Fullstack Developer Portfolio | Professional Oversleeper",
+    default: "SleepyLeo | Fullstack Developer Portfolio",
     template: "%s | SleepyLeo",
   },
   description:
-    "SleepyLeo's Portfolio - A Fullstack Developer who codes during the day and dreams in TypeScript at night. Explore projects, skills, and more. Warning: May contain excessive caffeine and sarcasm.",
+    "SleepyLeo - Fullstack Developer portfolio showcasing projects in TypeScript, React, and Next.js. Explore skills, live demos, and more.",
   keywords: [
     "sleepyleo",
     "sleepy leo",
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   creator: "SleepyLeo",
   publisher: "SleepyLeo",
   openGraph: {
-    title: "SleepyLeo - Fullstack Developer Portfolio",
-    description: "SleepyLeo's Portfolio - Fullstack Dev | Professional Oversleeper | Bugs' Worst Nightmare",
+    title: "SleepyLeo | Fullstack Developer Portfolio",
+    description: "SleepyLeo - Fullstack Developer portfolio showcasing projects in TypeScript, React, and Next.js.",
     type: "website",
     locale: "en_US",
     url: "https://www.sleepyleo.com",
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SleepyLeo - Fullstack Developer Portfolio",
-    description: "SleepyLeo's Portfolio - Fullstack Dev | Professional Oversleeper | Bugs' Worst Nightmare",
+    title: "SleepyLeo | Fullstack Developer Portfolio",
+    description: "SleepyLeo - Fullstack Developer portfolio showcasing projects in TypeScript, React, and Next.js.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -72,8 +72,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add these after setting up Google Search Console
-    // google: "your-google-verification-code",
+    google: "rkJxBCjyNQHolKg2RTz9Aw_FTJMp7xa5ECj_QfZvyFY",
   },
   alternates: {
     canonical: "https://www.sleepyleo.com",
