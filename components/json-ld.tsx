@@ -27,7 +27,7 @@ export function JsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "SleepyLeo",
-    alternateName: ["SleepyLeo Portfolio", "SleepyLeo Hub"],
+    alternateName: ["SleepyLeo Portfolio", "SleepyLeo Hub", "Kundids", "Khawmeesri"],
     url: "https://www.sleepyleo.com",
     description:
       "SleepyLeo's Portfolio - Fullstack Developer specializing in modern web technologies",

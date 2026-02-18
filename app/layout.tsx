@@ -27,6 +27,8 @@ export const metadata: Metadata = {
     "sleepy leo",
     "sleepyleo portfolio",
     "sleepyleo developer",
+    "Kundids",
+    "Khawmeesri",
     "fullstack developer",
     "portfolio",
     "typescript",
