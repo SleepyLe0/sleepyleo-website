@@ -1,161 +1,234 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { AuroraBackground } from "@/components/ui/aurora-background";
+import { motion } from "motion/react";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Github, ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ParticleField } from "@/components/ui/particle-field";
+import { ArrowRight, Github, Linkedin, ChevronDown } from "lucide-react";
 
-const words = ["Fullstack Dev", "Professional Oversleeper", "Bug's Worst Nightmare", "TypeScript Enthusiast", "Coffee Powered"];
+const words = [
+  "Fullstack Dev",
+  "Professional Oversleeper",
+  "Bug's Worst Nightmare",
+  "TypeScript Enthusiast",
+  "Coffee Powered",
+];
 
+// Stagger container — no ease needed here
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.3,
-    },
+    transition: { staggerChildren: 0.12, delayChildren: 0.4 },
   },
 };
 
+// Item variants without ease — ease goes on the motion element's `transition` prop
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-    },
-  },
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0 },
 };
+
+const itemTransition = { duration: 0.7, ease: "easeOut" as const };
 
 export function Hero() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-
-      // Determine active section based on scroll position
-      const sections = ["hero", "projects"];
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 150) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToSection = (href: string) => {
-    const id = href.replace("#", "");
-    const element = document.getElementById(id);
-    if (element) {
-      // For hero, scroll to top. For other sections, scroll to their start
-      if (id === "hero") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+  const scrollToSection = (id: string) => {
+    if (id === "hero") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-    setMobileMenuOpen(false);
   };
-  
+
   const scrollToContent = () => {
-    window.scrollTo({
-      top: window.innerHeight,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
   };
 
   return (
-    <AuroraBackground id="hero" className="scroll-mt-20">
+    <section
+      id="hero"
+      className="relative flex h-screen min-h-[700px] flex-col items-center justify-center overflow-hidden bg-zinc-950"
+    >
+      {/* === Layer 1: Particle Field === */}
+      <ParticleField className="z-0" count={90} connectionDistance={130} />
+
+      {/* === Layer 2: Radial glow blobs === */}
+      <div className="pointer-events-none absolute inset-0 z-[1]">
+        <div className="absolute -left-32 -top-32 h-[600px] w-[600px] rounded-full bg-violet-600/10 blur-[120px]" />
+        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-indigo-600/10 blur-[100px]" />
+        <div className="absolute left-1/2 top-1/2 h-[400px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/5 blur-[80px]" />
+      </div>
+
+      {/* === Layer 3: Noise/grain texture overlay === */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[2] opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px",
+        }}
+      />
+
+      {/* === Layer 4: Main content === */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative flex flex-col gap-4 items-center justify-center px-4"
+        className="relative z-10 flex flex-col items-center gap-6 px-4 text-center"
       >
-        {/* Greeting Badge */}
-        <motion.div
-          variants={itemVariants}
-          className="px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm"
-        >
-          <span className="text-sm text-neutral-300">👋 Welcome to my corner of the internet</span>
+        {/* Badge */}
+        <motion.div variants={itemVariants} transition={itemTransition}>
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-neutral-400 backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            Available for opportunities
+          </span>
         </motion.div>
 
-        {/* Main Heading */}
+        {/* Name */}
         <motion.h1
           variants={itemVariants}
-          className="text-3xl md:text-7xl font-bold dark:text-white text-center"
+          transition={itemTransition}
+          className="text-5xl font-bold tracking-tight md:text-8xl"
         >
-          Hey, I&apos;m <span className="text-indigo-500 bg-linear-to-r from-indigo-500 to-purple-500 bg-clip-text">SleepyLeo</span>
+          <span className="block text-neutral-400 text-2xl md:text-3xl font-normal mb-2 tracking-widest uppercase">
+            Hey, I&apos;m
+          </span>
+          <span className="relative inline-block">
+            {/* Glow behind name */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 blur-2xl opacity-60 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 bg-clip-text text-transparent select-none"
+            >
+              SleepyLeo
+            </span>
+            <span className="relative bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
+              SleepyLeo
+            </span>
+          </span>
         </motion.h1>
 
         {/* Flip Words */}
         <motion.div
           variants={itemVariants}
-          className="font-extralight text-base md:text-4xl dark:text-neutral-200 py-4 flex items-center justify-center"
+          transition={itemTransition}
+          className="flex items-center gap-2 text-lg md:text-2xl text-neutral-400"
         >
-          I'm a <FlipWords words={words} className="text-indigo-400 font-normal" />
+          <span>I&apos;m a</span>
+          <FlipWords
+            words={words}
+            className="text-indigo-300 font-semibold"
+          />
         </motion.div>
 
         {/* Description */}
         <motion.p
           variants={itemVariants}
-          className="text-neutral-600 dark:text-neutral-400 text-center max-w-2xl text-sm md:text-base leading-relaxed"
+          transition={itemTransition}
+          className="max-w-xl text-sm md:text-base leading-relaxed text-neutral-500"
         >
-          Building things that work (most of the time) and debugging code that shouldn't have broken in the first place.
+          Building things that work{" "}
+          <span className="text-neutral-400">(most of the time)</span> and
+          debugging code that shouldn&apos;t have broken in the first place.
           Armed with TypeScript and an unhealthy amount of caffeine.
         </motion.p>
 
         {/* CTA Buttons */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row gap-4 mt-6"
+          transition={itemTransition}
+          className="flex flex-col sm:flex-row items-center gap-3 mt-2"
         >
-          <Button onClick={() => scrollToSection("#projects")} size="lg" className="group bg-indigo-600 hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/25 transition-all duration-300">
-            View My Work
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <Button
+            onClick={() => scrollToSection("projects")}
+            size="lg"
+            className="group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 px-8"
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              View My Work
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </span>
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           </Button>
-          <Button asChild variant="ghost" size="lg" className="hover:bg-white/10 transition-all duration-300">
-            <a href="https://github.com/SleepyLe0" target="_blank" rel="noopener noreferrer">
-              <Github className="mr-2 h-4 w-4" />
-              GitHub
-            </a>
-          </Button>
+
+          <div className="flex items-center gap-2">
+            <Button
+              asChild
+              variant="ghost"
+              size="lg"
+              className="rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 px-5"
+            >
+              <a
+                href="https://github.com/SleepyLe0"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+              >
+                <Github className="h-5 w-5" />
+                <span className="ml-2">GitHub</span>
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              size="lg"
+              className="rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 px-5"
+            >
+              <a
+                href="https://www.linkedin.com/in/kundids-khawmeesri-90814526a/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+                <span className="ml-2">LinkedIn</span>
+              </a>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Stats row */}
+        <motion.div
+          variants={itemVariants}
+          transition={itemTransition}
+          className="flex items-center gap-8 mt-4 text-center"
+        >
+          {[
+            { label: "Projects Built", value: "10+" },
+            { label: "Cups of Coffee", value: "∞" },
+            { label: "Bugs Fixed", value: "Most" },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col gap-0.5">
+              <span className="text-2xl font-bold text-white">{stat.value}</span>
+              <span className="text-xs text-neutral-500 uppercase tracking-wider">{stat.label}</span>
+            </div>
+          ))}
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
+      {/* === Scroll Indicator === */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.5 }}
+        transition={{ delay: 2, duration: 0.8 }}
         onClick={scrollToContent}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-1.5 text-neutral-600 hover:text-neutral-300 transition-colors cursor-pointer group"
         aria-label="Scroll down"
       >
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
+        <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="group-hover:text-indigo-400 transition-colors"
         >
-          <ChevronDown className="h-5 w-5" />
+          <ChevronDown className="h-4 w-4" />
         </motion.div>
       </motion.button>
-    </AuroraBackground>
+
+      {/* Bottom fade — must match projects section bg (zinc-950) */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-48 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
+    </section>
   );
 }
-

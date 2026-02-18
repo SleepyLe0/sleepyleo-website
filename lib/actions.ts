@@ -39,6 +39,56 @@ export async function getProjects(includeHidden = false): Promise<{ success: boo
   }
 }
 
+// Fetch total commit count across all GitHub-synced repos
+// Uses the Link header trick: GET commits?per_page=1 → last page = total commits
+export async function getTotalCommits(): Promise<number> {
+  const username = process.env.GITHUB_USERNAME;
+  const token = process.env.GITHUB_TOKEN;
+
+  if (!username || !prisma) return 0;
+
+  try {
+    // Get all repos that have a githubId (synced from GitHub)
+    const syncedProjects = await prisma.project.findMany({
+      where: { githubId: { not: null }, repoUrl: { not: null } },
+      select: { name: true },
+    });
+
+    if (syncedProjects.length === 0) return 0;
+
+    const headers: HeadersInit = {
+      Accept: "application/vnd.github.v3+json",
+      "User-Agent": "SleepyLeo-Hub",
+    };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    // Fetch commit count per repo in parallel using the Link header trick
+    const counts = await Promise.all(
+      syncedProjects.map(async ({ name }) => {
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${username}/${name}/commits?per_page=1`,
+            { headers, next: { revalidate: 3600 } } // cache 1 hour
+          );
+          if (!res.ok) return 0;
+          const link = res.headers.get("link") ?? "";
+          // Link header format: <...?page=N>; rel="last"
+          const match = link.match(/[?&]page=(\d+)>;\s*rel="last"/);
+          return match ? parseInt(match[1], 10) : 1;
+        } catch {
+          return 0;
+        }
+      })
+    );
+
+    return counts.reduce((sum, n) => sum + n, 0);
+  } catch (error) {
+    console.error("Failed to fetch commit counts:", error);
+    return 0;
+  }
+}
+
+
 interface GitHubRepo {
   id: number;
   name: string;

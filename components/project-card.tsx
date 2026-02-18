@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { WobbleCard } from "@/components/ui/wobble-card";
+import { useRef, useState } from "react";
+import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ExternalLink, Github, Star, GitFork, Sparkles, Terminal } from "lucide-react";
+import {
+  ExternalLink,
+  Github,
+  Star,
+  GitFork,
+  Sparkles,
+  Terminal,
+} from "lucide-react";
 
 interface Project {
   id: string;
@@ -30,162 +37,247 @@ interface Project {
 }
 
 const sarcasticTooltips: Record<string, string> = {
-  "TypeScript": "JavaScript that went to therapy",
-  "React": "The library that makes you feel productive",
+  TypeScript: "JavaScript that went to therapy",
+  React: "The library that makes you feel productive",
   "Next.js": "React's overachieving sibling",
-  "PostgreSQL": "SQL but make it fancy",
-  "Prisma": "Because writing raw SQL is for masochists",
-  "Docker": "Works on my machine, certified",
+  PostgreSQL: "SQL but make it fancy",
+  Prisma: "Because writing raw SQL is for masochists",
+  Docker: "Works on my machine, certified",
   "Node.js": "JavaScript escaped the browser",
-  "Tailwind": "Inline styles but we pretend it's different",
-  "Python": "Whitespace: The Programming Language",
-  "Go": "When you want C but hate yourself less",
-  "Rust": "Memory safety at the cost of your sanity",
-  "JavaScript": "The language that refuses to die",
-  "CSS": "Where centering a div is a major achievement",
-  "HTML": "The skeleton nobody appreciates",
-  "MongoDB": "JSON all the way down",
-  "Redis": "Memory? What memory?",
-  "GraphQL": "REST but make it complicated",
-  "Kubernetes": "YAML engineering at its finest",
-  "AWS": "Another Way to Spend money",
-  "Vue": "React's chill cousin",
-  "Svelte": "The compiler does the work",
+  Tailwind: "Inline styles but we pretend it's different",
+  Python: "Whitespace: The Programming Language",
+  Go: "When you want C but hate yourself less",
+  Rust: "Memory safety at the cost of your sanity",
+  JavaScript: "The language that refuses to die",
+  CSS: "Where centering a div is a major achievement",
+  HTML: "The skeleton nobody appreciates",
+  MongoDB: "JSON all the way down",
+  Redis: "Memory? What memory?",
+  GraphQL: "REST but make it complicated",
+  Kubernetes: "YAML engineering at its finest",
+  AWS: "Another Way to Spend money",
+  Vue: "React's chill cousin",
+  Svelte: "The compiler does the work",
 };
 
-const cardColors = [
-  "bg-pink-800",
-  "bg-indigo-800",
-  "bg-emerald-800",
-  "bg-orange-800",
-  "bg-cyan-800",
-  "bg-purple-800",
+// Per-card accent — used for the spotlight glow color
+const accentRgb = [
+  "99, 102, 241",   // indigo
+  "168, 85, 247",   // purple
+  "20, 184, 166",   // teal
+  "245, 158, 11",   // amber
+  "59, 130, 246",   // blue
+  "236, 72, 153",   // pink
 ];
 
-export function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const colorClass = cardColors[index % cardColors.length];
+const statusConfig: Record<string, { label: string; color: string }> = {
+  active: { label: "Active", color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+  archived: { label: "Archived", color: "bg-neutral-500/15 text-neutral-400 border-neutral-500/30" },
+  wip: { label: "WIP", color: "bg-amber-500/15 text-amber-400 border-amber-500/30" },
+};
+
+export function ProjectCard({
+  project,
+  index,
+  featured = false,
+}: {
+  project: Project;
+  index: number;
+  featured?: boolean;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [spotlight, setSpotlight] = useState({ x: 0, y: 0, opacity: 0 });
+  const rgb = accentRgb[index % accentRgb.length];
+  const status = statusConfig[project.status] ?? {
+    label: project.status,
+    color: "bg-neutral-500/15 text-neutral-400 border-neutral-500/30",
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setSpotlight({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      opacity: 1,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setSpotlight((s) => ({ ...s, opacity: 0 }));
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-      }}
-      className="h-full"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.7, delay: (index % 3) * 0.12, ease: "easeOut" }}
+      className={`group relative h-full ${featured ? "md:col-span-2" : ""}`}
     >
-      <WobbleCard className="p-0 sm:p-0 flex flex-col" containerClassName={`col-span-1 h-full min-h-[300px] ${colorClass}`}>
-        <div className="overflow-hidden rounded-t-2xl w-full relative h-48 shrink-0">
+      {/* Outer glow on hover */}
+      <div
+        className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `linear-gradient(135deg, rgba(${rgb},0.5), rgba(${rgb},0.1))`,
+          filter: "blur(1px)",
+        }}
+      />
+
+      {/* Card */}
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative h-full flex flex-col rounded-2xl border border-white/[0.06] bg-zinc-900/70 backdrop-blur-md overflow-hidden"
+      >
+        {/* Mouse-tracking spotlight */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300 rounded-2xl"
+          style={{
+            opacity: spotlight.opacity,
+            background: `radial-gradient(400px circle at ${spotlight.x}px ${spotlight.y}px, rgba(${rgb},0.12), transparent 60%)`,
+          }}
+        />
+
+        {/* Inner border highlight (always subtle) */}
+        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/[0.04] group-hover:ring-white/[0.1] transition-all duration-500" />
+
+        {/* Image */}
+        <div className={`relative ${featured ? "h-56" : "h-40"} w-full shrink-0 overflow-hidden`}>
           {project.memeUrl ? (
             <Image
               src={project.memeUrl}
               alt={`${project.name} meme`}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover opacity-80"
+              sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+              className="object-cover opacity-60 group-hover:opacity-85 group-hover:scale-105 transition-all duration-700"
               loading="eager"
               unoptimized
             />
           ) : (
-            <div className="w-full h-full bg-black/20 flex flex-col items-center justify-center gap-2">
-              <Terminal className="h-10 w-10 text-white/20" />
-              <span className="text-white/20 text-xs font-mono tracking-widest uppercase">no meme yet</span>
-            </div>
-          )}
-        </div>
-        <div className="relative z-10 p-5 flex flex-col flex-1">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl md:text-2xl font-bold text-white">
-                {project.name}
-              </h2>
-              {project.featured && (
-                <Sparkles className="h-5 w-5 text-yellow-400" />
-              )}
-            </div>
-            <Badge
-              variant={project.status === "active" ? "default" : "secondary"}
-              className="ml-2"
+            <div
+              className="flex h-full w-full flex-col items-center justify-center gap-2"
+              style={{
+                background: `radial-gradient(ellipse at center, rgba(${rgb},0.08) 0%, transparent 70%), #18181b`,
+              }}
             >
-              {project.status}
-            </Badge>
-          </div>
+              <Terminal className="h-8 w-8" style={{ color: `rgba(${rgb},0.3)` }} />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-white/10">
+                no meme yet
+              </span>
+            </div>
+          )}
+          {/* Gradient fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent" />
 
-          {project.description && (
-            <p className="text-neutral-200 text-sm md:text-base mb-4">
-              {project.description}
-            </p>
+          {/* Featured badge overlay */}
+          {project.featured && (
+            <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[10px] font-medium text-amber-400 backdrop-blur-sm">
+              <Sparkles className="h-3 w-3" />
+              Featured
+            </div>
           )}
 
-          {/* GitHub Stats */}
-          {(project.stars !== undefined || project.language) && (
-            <div className="flex items-center gap-4 mb-4 text-sm text-neutral-300">
+          {/* Status badge overlay */}
+          <div className="absolute top-3 right-3 z-20">
+            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider backdrop-blur-sm ${status.color}`}>
+              {status.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-20 flex flex-1 flex-col p-5 gap-3">
+          {/* Title + stats row */}
+          <div className="flex items-start justify-between gap-2">
+            <h2 className="text-base font-bold text-white leading-tight group-hover:text-white transition-colors">
+              {project.name}
+            </h2>
+            <div className="flex items-center gap-3 text-[11px] text-neutral-600 shrink-0">
               {project.language && (
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-white/60" />
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: `rgba(${rgb},0.8)` }} />
                   {project.language}
                 </span>
               )}
-              {project.stars !== undefined && project.stars > 0 && (
+              {!!project.stars && (
                 <span className="flex items-center gap-1">
-                  <Star className="h-4 w-4" />
+                  <Star className="h-3 w-3" />
                   {project.stars}
                 </span>
               )}
-              {project.forks !== undefined && project.forks > 0 && (
+              {!!project.forks && (
                 <span className="flex items-center gap-1">
-                  <GitFork className="h-4 w-4" />
+                  <GitFork className="h-3 w-3" />
                   {project.forks}
                 </span>
               )}
             </div>
+          </div>
+
+          {/* Description */}
+          {project.description && (
+            <p className="text-sm text-neutral-500 leading-relaxed line-clamp-2 group-hover:text-neutral-400 transition-colors">
+              {project.description}
+            </p>
           )}
 
-          <TooltipProvider delayDuration={200}>
-            <div className="flex flex-wrap gap-2 mb-6">
+          {/* Tech stack */}
+          <TooltipProvider delayDuration={100}>
+            <div className="flex flex-wrap gap-1.5">
               {project.techStack.map((tech) => (
                 <Tooltip key={tech}>
                   <TooltipTrigger asChild>
                     <Badge
                       variant="outline"
-                      className="text-white border-white/30 hover:bg-white/10 cursor-help transition-colors"
+                      className="border-white/8 bg-white/[0.03] text-neutral-400 hover:bg-white/8 hover:border-white/15 hover:text-neutral-200 cursor-help transition-all text-[10px] py-0"
                     >
                       {tech}
                     </Badge>
                   </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    className="bg-neutral-900 border-neutral-700 text-neutral-200"
-                  >
-                    <p className="text-sm">{sarcasticTooltips[tech] || tech}</p>
+                  <TooltipContent side="top" className="bg-zinc-900 border-zinc-700 text-neutral-200 text-xs">
+                    {sarcasticTooltips[tech] ?? tech}
                   </TooltipContent>
                 </Tooltip>
               ))}
             </div>
           </TooltipProvider>
 
-          <div className="flex gap-2 mt-auto">
+          {/* Action buttons */}
+          <div className="mt-auto flex gap-2 pt-1">
             {project.repoUrl && (
-              <Button asChild size="sm" variant="secondary">
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="h-8 border border-white/8 hover:border-white/15 hover:bg-white/5 text-neutral-400 hover:text-white transition-all text-xs px-3"
+              >
                 <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-                  <Github className="h-4 w-4 mr-1" />
+                  <Github className="h-3.5 w-3.5 mr-1.5" />
                   Code
                 </a>
               </Button>
             )}
             {project.liveUrl && (
-              <Button asChild size="sm" variant="secondary">
+              <Button
+                asChild
+                size="sm"
+                className="h-8 text-xs px-3 text-white shadow-sm transition-all"
+                style={{
+                  background: `rgba(${rgb}, 0.7)`,
+                  boxShadow: `0 0 16px rgba(${rgb}, 0.2)`,
+                }}
+              >
                 <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4 mr-1" />
+                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
                   Live
                 </a>
               </Button>
             )}
           </div>
         </div>
-      </WobbleCard>
+      </div>
     </motion.div>
   );
 }
-
