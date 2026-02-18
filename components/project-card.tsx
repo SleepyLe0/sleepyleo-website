@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ExternalLink, Github, Star, GitFork, Sparkles } from "lucide-react";
+import { ExternalLink, Github, Star, GitFork, Sparkles, Terminal } from "lucide-react";
 
 interface Project {
   id: string;
@@ -73,21 +73,28 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
         duration: 0.5,
         delay: index * 0.1,
       }}
+      className="h-full"
     >
-      <WobbleCard className="p-0 sm:p-0" containerClassName={`col-span-1 min-h-[300px] ${colorClass}`}>
-        {project.memeUrl && (
-          <div className="overflow-hidden rounded-t-lg w-full relative aspect-[3/1]">
+      <WobbleCard className="p-0 sm:p-0 flex flex-col" containerClassName={`col-span-1 h-full min-h-[300px] ${colorClass}`}>
+        <div className="overflow-hidden rounded-t-2xl w-full relative h-48 shrink-0">
+          {project.memeUrl ? (
             <Image
               src={project.memeUrl}
               alt={`${project.name} meme`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover opacity-80"
+              loading="eager"
               unoptimized
             />
-          </div>
-        )}
-        <div className="relative z-10 p-5">
+          ) : (
+            <div className="w-full h-full bg-black/20 flex flex-col items-center justify-center gap-2">
+              <Terminal className="h-10 w-10 text-white/20" />
+              <span className="text-white/20 text-xs font-mono tracking-widest uppercase">no meme yet</span>
+            </div>
+          )}
+        </div>
+        <div className="relative z-10 p-5 flex flex-col flex-1">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-2">
               <h2 className="text-xl md:text-2xl font-bold text-white">
@@ -158,7 +165,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             </div>
           </TooltipProvider>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-auto">
             {project.repoUrl && (
               <Button asChild size="sm" variant="secondary">
                 <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
