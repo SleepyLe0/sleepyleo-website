@@ -17,11 +17,9 @@ const wrongMessages = [
   "Nope! Think smaller and snortier.",
 ];
 
-export function DogBreedQuiz() {
+export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [wrongMessage, setWrongMessage] = useState("");
-
-  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001";
 
   const handleSelect = (breed: typeof breeds[number]) => {
     setSelected(breed.name);

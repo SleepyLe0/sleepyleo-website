@@ -14,7 +14,7 @@ export default async function Home() {
     <>
       <Hero />
       <ProjectsSection projects={projects} />
-      <DogBreedQuiz />
+      <DogBreedQuiz adminUrl={process.env.ADMIN_URL ?? "http://localhost:3001"} />
     </>
   );
 }
