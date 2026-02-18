@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Github, Coffee, ChevronDown } from "lucide-react";
+import { ArrowRight, Github, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const words = ["Fullstack Dev", "Professional Oversleeper", "Bug's Worst Nightmare", "TypeScript Enthusiast", "Coffee Powered"];
@@ -41,7 +41,7 @@ export function Hero() {
       setScrolled(window.scrollY > 20);
 
       // Determine active section based on scroll position
-      const sections = ["hero", "projects", "server-health", "intern"];
+      const sections = ["hero", "projects"];
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
         if (element) {
@@ -128,10 +128,6 @@ export function Hero() {
           <Button onClick={() => scrollToSection("#projects")} size="lg" className="group bg-indigo-600 hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/25 transition-all duration-300">
             View My Work
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Button>
-          <Button onClick={() => scrollToSection("#intern")} variant="outline" size="lg" className="text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300">
-            <Coffee className="mr-2 h-4 w-4" />
-            Meet My Intern
           </Button>
           <Button asChild variant="ghost" size="lg" className="hover:bg-white/10 transition-all duration-300">
             <a href="https://github.com/SleepyLe0" target="_blank" rel="noopener noreferrer">

@@ -1,6 +1,6 @@
 import { Hero } from "@/components/hero";
 import { ProjectsSection } from "@/components/sections/projects-section";
-import { ServerHealthSection } from "@/components/sections/server-health-section";
+import { DogBreedQuiz } from "@/components/dog-breed-quiz";
 import { getProjects, syncGitHubProjects } from "@/lib/actions";
 
 // Force dynamic rendering to always show fresh data
@@ -22,7 +22,7 @@ export default async function Home() {
     <>
       <Hero />
       <ProjectsSection projects={projects} />
-      <ServerHealthSection />
+      <DogBreedQuiz />
     </>
   );
 }

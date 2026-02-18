@@ -1,20 +1,28 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { exec, spawn } from "child_process";
-import { promisify } from "util";
-import os from "os";
-import { Duplex } from "stream";
-import { Client } from "ssh2";
 
-const execAsync = promisify(exec);
+interface Project {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  status: string;
+  techStack: string[];
+  memeUrl: string | null;
+  repoUrl: string | null;
+  liveUrl: string | null;
+  visible: boolean;
+  featured: boolean;
+  githubId: number | null;
+  stars: number;
+  forks: number;
+  language: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-// VM connection settings via Cloudflare Access
-const VM_HOST = process.env.VM_SSH_HOST; // e.g., ssh.your-domain.com
-const VM_USER = process.env.VM_SSH_USER || "root";
-const VM_PASSWORD = process.env.VM_SSH_PASSWORD;
-
-export async function getProjects(includeHidden = false) {
+export async function getProjects(includeHidden = false): Promise<{ success: boolean; data: Project[]; error?: string }> {
   if (!prisma) {
     return { success: false, data: [], error: "Database not configured" };
   }
@@ -29,257 +37,6 @@ export async function getProjects(includeHidden = false) {
     console.error("Failed to fetch projects:", error);
     return { success: false, data: [], error: "Failed to fetch projects" };
   }
-}
-
-export async function createProject(data: {
-  name: string;
-  slug: string;
-  description?: string;
-  techStack: string[];
-  memeUrl?: string;
-  repoUrl?: string;
-  liveUrl?: string;
-}) {
-  if (!prisma) {
-    return { success: false, error: "Database not configured" };
-  }
-
-  try {
-    const project = await prisma.project.create({
-      data,
-    });
-    return { success: true, data: project };
-  } catch (error) {
-    console.error("Failed to create project:", error);
-    return { success: false, error: "Failed to create project" };
-  }
-}
-
-export async function executeCommand(command: string): Promise<{
-  success: boolean;
-  output?: string;
-  error?: string;
-}> {
-  // Basic command sanitization - block dangerous commands
-  const blockedCommands = [
-    "rm -rf",
-    "rm -r /",
-    "mkfs",
-    "dd if=",
-    "> /dev/",
-    "chmod -R 777 /",
-    ":(){ :|:& };:",
-    "wget",
-    "curl",
-    "nc ",
-    "netcat",
-  ];
-
-  const lowerCommand = command.toLowerCase();
-  for (const blocked of blockedCommands) {
-    if (lowerCommand.includes(blocked)) {
-      return {
-        success: false,
-        error: `Command blocked for safety: contains "${blocked}"`,
-      };
-    }
-  }
-
-  // Check if VM connection is configured
-  if (!VM_HOST) {
-    return {
-      success: false,
-      error: "VM_SSH_HOST environment variable not configured",
-    };
-  }
-
-  if (!VM_PASSWORD) {
-    return {
-      success: false,
-      error: "VM_SSH_PASSWORD environment variable not configured",
-    };
-  }
-
-  try {
-    // Execute command on remote VM via SSH through cloudflared
-    const result = await executeRemoteCommand(command);
-    return result;
-  } catch (error) {
-    const execError = error as { message: string };
-    return {
-      success: false,
-      error: execError.message || "Failed to execute remote command",
-    };
-  }
-}
-
-async function executeRemoteCommand(command: string): Promise<{
-  success: boolean;
-  output?: string;
-  error?: string;
-}> {
-  return new Promise((resolve) => {
-    const conn = new Client();
-    let stdout = "";
-    let stderr = "";
-    let resolved = false;
-
-    const timeout = setTimeout(() => {
-      if (!resolved) {
-        resolved = true;
-        conn.end();
-        resolve({
-          success: false,
-          error: "Command timed out after 5 minutes",
-        });
-      }
-    }, 300000);
-
-    // Spawn cloudflared to create a tunnel to the SSH server
-    const cloudflared = spawn("cloudflared", ["access", "ssh", "--hostname", VM_HOST!], {
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    let cloudflaredClosed = false;
-
-    // Handle cloudflared stdin errors (EPIPE)
-    cloudflared.stdin.on("error", (err) => {
-      if ((err as NodeJS.ErrnoException).code === "EPIPE") {
-        cloudflaredClosed = true;
-        // Silently ignore EPIPE - cloudflared has closed
-      } else {
-        console.error("cloudflared stdin error:", err);
-      }
-    });
-
-    // Create a duplex stream that wraps cloudflared's stdin/stdout
-    const duplexStream = new Duplex({
-      read() { },
-      write(chunk, encoding, callback) {
-        if (cloudflaredClosed || !cloudflared.stdin.writable) {
-          callback(new Error("cloudflared connection closed"));
-          return;
-        }
-        try {
-          cloudflared.stdin.write(chunk, encoding, callback);
-        } catch (err) {
-          callback(err as Error);
-        }
-      },
-      final(callback) {
-        if (cloudflaredClosed || !cloudflared.stdin.writable) {
-          callback();
-          return;
-        }
-        try {
-          cloudflared.stdin.end(callback);
-        } catch {
-          callback();
-        }
-      },
-    });
-
-    // Pipe cloudflared stdout to the duplex stream
-    cloudflared.stdout.on("data", (data) => {
-      duplexStream.push(data);
-    });
-
-    cloudflared.stdout.on("end", () => {
-      duplexStream.push(null);
-    });
-
-    cloudflared.stderr.on("data", (data) => {
-      console.error("cloudflared stderr:", data.toString());
-    });
-
-    conn.on("ready", () => {
-      conn.exec(command, (err, channel) => {
-        if (err) {
-          clearTimeout(timeout);
-          if (!resolved) {
-            resolved = true;
-            conn.end();
-            cloudflared.kill();
-            resolve({
-              success: false,
-              error: `SSH exec error: ${err.message}`,
-            });
-          }
-          return;
-        }
-
-        channel.on("close", (code: number) => {
-          clearTimeout(timeout);
-          if (!resolved) {
-            resolved = true;
-            conn.end();
-            cloudflared.kill();
-            if (code === 0) {
-              resolve({
-                success: true,
-                output: stdout || stderr || "Command executed successfully (no output)",
-              });
-            } else {
-              resolve({
-                success: false,
-                error: stderr || stdout || `Command exited with code ${code}`,
-              });
-            }
-          }
-        });
-
-        channel.on("data", (data: Buffer) => {
-          stdout += data.toString();
-        });
-
-        channel.stderr.on("data", (data: Buffer) => {
-          stderr += data.toString();
-        });
-      });
-    });
-
-    conn.on("error", (err) => {
-      clearTimeout(timeout);
-      if (!resolved) {
-        resolved = true;
-        cloudflared.kill();
-        resolve({
-          success: false,
-          error: `SSH connection error: ${err.message}`,
-        });
-      }
-    });
-
-    cloudflared.on("error", (err) => {
-      clearTimeout(timeout);
-      if (!resolved) {
-        resolved = true;
-        conn.end();
-        resolve({
-          success: false,
-          error: `Cloudflared error: ${err.message}`,
-        });
-      }
-    });
-
-    cloudflared.on("close", (code) => {
-      if (!resolved && code !== 0) {
-        resolved = true;
-        conn.end();
-        resolve({
-          success: false,
-          error: `Cloudflared exited with code ${code}`,
-        });
-      }
-    });
-
-    // Connect ssh2 through the duplex stream
-    conn.connect({
-      sock: duplexStream,
-      username: VM_USER,
-      password: VM_PASSWORD,
-    });
-  });
 }
 
 interface GitHubRepo {
@@ -330,19 +87,16 @@ export async function syncGitHubProjects() {
 
     const repos: GitHubRepo[] = await response.json();
 
-    // Filter and sync repos
     const filteredRepos = repos.filter((repo) => !repo.fork && !repo.archived);
 
     for (const repo of filteredRepos) {
       const slug = repo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-      // Check if project exists by githubId
       const existing = await prisma.project.findUnique({
         where: { githubId: repo.id },
       });
 
       if (existing) {
-        // Update existing project with latest GitHub data
         await prisma.project.update({
           where: { githubId: repo.id },
           data: {
@@ -353,12 +107,10 @@ export async function syncGitHubProjects() {
           },
         });
       } else {
-        // Check if slug exists
         const slugExists = await prisma.project.findUnique({
           where: { slug },
         });
 
-        // Create new project
         await prisma.project.create({
           data: {
             githubId: repo.id,
@@ -382,102 +134,4 @@ export async function syncGitHubProjects() {
     console.error("Failed to sync GitHub projects:", error);
     return { success: false, error: "Failed to sync GitHub projects" };
   }
-}
-
-export async function getSystemHealth(): Promise<{
-  cpu: number;
-  memory: {
-    total: number;
-    used: number;
-    percentage: number;
-  };
-  uptime: number;
-  platform: string;
-  hostname: string;
-}> {
-  // Check if VM connection is configured
-  if (!VM_HOST || !VM_PASSWORD) {
-    // Fallback to local health if VM not configured
-    return getLocalSystemHealth();
-  }
-
-  try {
-    // Execute a single command that outputs all health info as JSON
-    // Using /proc/stat for more reliable CPU reading
-    const healthCommand = `
-      cpu_usage=$(awk '/^cpu / {idle=$5; total=$2+$3+$4+$5+$6+$7+$8; print int(100*(total-idle)/total)}' /proc/stat 2>/dev/null || echo "0")
-      echo "{
-        \\"cpu\\": $cpu_usage,
-        \\"memTotal\\": $(free -b | awk '/Mem:/ {print $2}'),
-        \\"memUsed\\": $(free -b | awk '/Mem:/ {print $3}'),
-        \\"uptime\\": $(cat /proc/uptime | awk '{print int($1)}'),
-        \\"platform\\": \\"$(uname -s | tr '[:upper:]' '[:lower:]')\\",
-        \\"hostname\\": \\"$(hostname)\\"
-      }"
-    `.trim();
-
-    const result = await executeRemoteCommand(healthCommand);
-
-    if (!result.success || !result.output) {
-      console.error("Failed to get VM health:", result.error);
-      return getLocalSystemHealth();
-    }
-
-    const data = JSON.parse(result.output.trim());
-    const totalMemory = Number(data.memTotal);
-    const usedMemory = Number(data.memUsed);
-
-    return {
-      cpu: Number(data.cpu) || 0,
-      memory: {
-        total: Math.round((totalMemory / (1024 * 1024 * 1024)) * 100) / 100,
-        used: Math.round((usedMemory / (1024 * 1024 * 1024)) * 100) / 100,
-        percentage: Math.round((usedMemory / totalMemory) * 100),
-      },
-      uptime: Number(data.uptime) || 0,
-      platform: data.platform || "linux",
-      hostname: data.hostname || "vm",
-    };
-  } catch (error) {
-    console.error("Error getting VM health:", error);
-    return getLocalSystemHealth();
-  }
-}
-
-function getLocalSystemHealth(): {
-  cpu: number;
-  memory: {
-    total: number;
-    used: number;
-    percentage: number;
-  };
-  uptime: number;
-  platform: string;
-  hostname: string;
-} {
-  const cpus = os.cpus();
-  const totalIdle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
-  const totalTick = cpus.reduce(
-    (acc, cpu) =>
-      acc + cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq,
-    0
-  );
-  const cpuUsage = Math.round((1 - totalIdle / totalTick) * 100);
-
-  const totalMemory = os.totalmem();
-  const freeMemory = os.freemem();
-  const usedMemory = totalMemory - freeMemory;
-  const memoryPercentage = Math.round((usedMemory / totalMemory) * 100);
-
-  return {
-    cpu: cpuUsage,
-    memory: {
-      total: Math.round((totalMemory / (1024 * 1024 * 1024)) * 100) / 100,
-      used: Math.round((usedMemory / (1024 * 1024 * 1024)) * 100) / 100,
-      percentage: memoryPercentage,
-    },
-    uptime: Math.round(os.uptime()),
-    platform: os.platform(),
-    hostname: os.hostname(),
-  };
 }

@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Cat, Home, FolderGit2, Activity, Menu, X, LogIn } from "lucide-react";
+import { Cat, Home, FolderGit2, Menu, X } from "lucide-react";
 
 const navItems = [
   { href: "#hero", label: "Home", icon: Home },
   { href: "#projects", label: "Projects", icon: FolderGit2 },
-  { href: "#server-health", label: "Server Health", icon: Activity },
 ];
 
 export function Navbar() {
@@ -20,8 +18,7 @@ export function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      // Determine active section based on scroll position
-      const sections = ["hero", "projects", "server-health"];
+      const sections = ["hero", "projects"];
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
         if (element) {
@@ -34,17 +31,14 @@ export function Navbar() {
       }
     };
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  /* Navbar visibility is now handled by the layout structure */
 
   const scrollToSection = (href: string) => {
     const id = href.replace("#", "");
     const element = document.getElementById(id);
     if (element) {
-      // For hero, scroll to top. For other sections, scroll to their start
       if (id === "hero") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
@@ -64,7 +58,6 @@ export function Navbar() {
             : "bg-neutral-900/60 backdrop-blur-md"
         )}
       >
-        {/* Logo */}
         <button
           onClick={() => scrollToSection("#hero")}
           className="flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-white/10"
@@ -73,10 +66,8 @@ export function Navbar() {
           <span className="font-semibold text-sm hidden sm:inline">SleepyLeo</span>
         </button>
 
-        {/* Divider */}
         <div className="h-6 w-px bg-white/10 mx-1 hidden sm:block" />
 
-        {/* Nav Items - Desktop */}
         <div className="hidden sm:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -99,19 +90,6 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Divider */}
-        <div className="h-6 w-px bg-white/10 mx-1 hidden sm:block" />
-
-        {/* Admin Login Button */}
-        <Link
-          href="/admin"
-          className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-neutral-500 hover:text-white hover:bg-white/10 transition-colors ml-1"
-          title="Admin Login"
-        >
-          <LogIn className="h-4 w-4" />
-        </Link>
-
-        {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors ml-1"
@@ -120,7 +98,6 @@ export function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="absolute top-full mt-2 left-4 right-4 sm:hidden">
           <div className="bg-neutral-900/95 backdrop-blur-xl rounded-2xl border border-white/10 p-2 shadow-xl">
@@ -143,18 +120,9 @@ export function Navbar() {
                 </button>
               );
             })}
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all duration-200 w-full text-left text-neutral-400 hover:text-white hover:bg-white/5 mt-1"
-            >
-              <LogIn className="h-5 w-5" />
-              <span>Admin</span>
-            </Link>
           </div>
         </div>
       )}
     </header>
   );
 }
-
