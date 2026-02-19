@@ -147,7 +147,7 @@ export function ProjectCard({
         <div className={`relative ${featured ? "h-56" : "h-40"} w-full shrink-0 overflow-hidden`}>
           {project.memeUrl ? (
             <Image
-              src={project.memeUrl}
+              src={`/api/gif?url=${encodeURIComponent(project.memeUrl)}`}
               alt={`${project.name} meme`}
               fill
               sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}

@@ -17,6 +17,10 @@ const wrongMessages = [
   "Nope! Think smaller and snortier.",
 ];
 
+function pickRandomWrongMessage() {
+  return wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
+}
+
 export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [wrongMessage, setWrongMessage] = useState("");
@@ -24,9 +28,7 @@ export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
   const handleSelect = (breed: (typeof breeds)[number]) => {
     setSelected(breed.name);
     if (!breed.correct) {
-      setWrongMessage(
-        wrongMessages[Math.floor(Math.random() * wrongMessages.length)]
-      );
+      setWrongMessage(pickRandomWrongMessage());
     }
   };
 
@@ -35,7 +37,7 @@ export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
   return (
     <section className="relative bg-zinc-950 py-20 px-4">
       {/* Top separator line */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/2 bg-linear-to-r from-transparent via-white/10 to-transparent" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
