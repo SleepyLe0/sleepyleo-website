@@ -35,6 +35,9 @@ export function ParticleField({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motionQuery.matches) return;
+
     const resize = () => {
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
@@ -128,11 +131,20 @@ export function ParticleField({
 
     draw();
 
+    const onMotionChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        cancelAnimationFrame(animFrameRef.current);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+    motionQuery.addEventListener("change", onMotionChange);
+
     return () => {
       cancelAnimationFrame(animFrameRef.current);
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("mouseleave", onMouseLeave);
+      motionQuery.removeEventListener("change", onMotionChange);
     };
   }, [count, connectionDistance, mouseRadius]);
 

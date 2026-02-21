@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Cat, Home, FolderGit2, Menu, X } from "lucide-react";
+import { Cat, Home, FolderGit2, User, Code2, Mail, Menu, X } from "lucide-react";
 
 const navItems = [
   { href: "#hero", label: "Home", icon: Home },
   { href: "#projects", label: "Projects", icon: FolderGit2 },
+  { href: "#about", label: "About", icon: User },
+  { href: "#skills", label: "Skills", icon: Code2 },
+  { href: "#contact", label: "Contact", icon: Mail },
 ];
 
 export function Navbar() {
@@ -18,7 +21,7 @@ export function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      const sections = ["hero", "projects"];
+      const sections = ["hero", "projects", "about", "skills", "contact"];
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
         if (element) {

@@ -2,6 +2,34 @@
 
 import { prisma } from "@/lib/prisma";
 
+export interface Profile {
+  id: string;
+  name: string;
+  bio: string;
+  background: string;
+  education: string;
+  location: string;
+  focus: string;
+  fuel: string;
+  timeline: { year: string; event: string }[];
+  availableForHire: boolean;
+  availableLabel: string;
+  email: string;
+  github: string;
+  linkedin: string;
+  ctaCopy: string;
+  updatedAt: Date;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category: string;
+  proficiency: string;
+  projectUsage: string;
+  order: number;
+}
+
 interface Project {
   id: string;
   name: string;
@@ -88,6 +116,36 @@ export async function getTotalCommits(): Promise<number> {
   }
 }
 
+
+export async function getProfile(): Promise<{ success: boolean; data: Profile | null; error?: string }> {
+  if (!prisma) {
+    return { success: false, data: null, error: "Database not configured" };
+  }
+
+  try {
+    const profile = await (prisma as unknown as { profile: { findFirst: () => Promise<Profile | null> } }).profile.findFirst();
+    return { success: true, data: profile };
+  } catch (error) {
+    console.error("Failed to fetch profile:", error);
+    return { success: false, data: null, error: "Failed to fetch profile" };
+  }
+}
+
+export async function getSkills(): Promise<{ success: boolean; data: Skill[]; error?: string }> {
+  if (!prisma) {
+    return { success: false, data: [], error: "Database not configured" };
+  }
+
+  try {
+    const skills = await (prisma as unknown as { skill: { findMany: (args: object) => Promise<Skill[]> } }).skill.findMany({
+      orderBy: [{ category: "asc" }, { order: "asc" }],
+    });
+    return { success: true, data: skills };
+  } catch (error) {
+    console.error("Failed to fetch skills:", error);
+    return { success: false, data: [], error: "Failed to fetch skills" };
+  }
+}
 
 interface GitHubRepo {
   id: number;

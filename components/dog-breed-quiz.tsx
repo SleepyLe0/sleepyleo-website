@@ -44,7 +44,7 @@ export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.6 }}
-        className="max-w-sm mx-auto text-center"
+        className="max-w-md mx-auto text-center"
       >
         <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em] mb-3">
           One more thing...
