@@ -31,7 +31,7 @@ export default function NotFound() {
           Looks like this page went for coffee and never came back.
         </p>
         <p className="text-neutral-500 mb-8">
-          Either the URL is wrong, or I deleted something I shouldn't have. Again.
+          Either the URL is wrong, or I deleted something I shouldn&apos;t have. Again.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
