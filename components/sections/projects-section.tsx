@@ -189,7 +189,7 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
             {[
               { value: projectCount, suffix: "+", label: "Projects" },
               { value: commitCount, suffix: "+", label: "Commits" },
-              { value: "∞", suffix: "", label: "Coffee" },
+              { value: "∞", suffix: "", label: "Matcha" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-2xl font-bold text-white tabular-nums">

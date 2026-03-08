@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ const words = [
   "Professional Oversleeper",
   "Bug's Worst Nightmare",
   "TypeScript Enthusiast",
-  "Coffee Powered",
+  "Matcha Powered",
 ];
 
 // Stagger container — no ease needed here
@@ -69,142 +70,178 @@ export function Hero() {
         }}
       />
 
-      {/* === Layer 4: Main content === */}
+      {/* === Layer 4: Two-column main content === */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 flex flex-col items-center gap-6 px-4 text-center"
+        className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12"
       >
-        {/* Badge */}
-        <motion.div variants={itemVariants} transition={itemTransition}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-neutral-400 backdrop-blur-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+        {/* ── LEFT COLUMN: Text content ── */}
+        <div className="flex flex-col items-start gap-5 flex-1">
+          {/* Badge */}
+          <motion.div variants={itemVariants} transition={itemTransition}>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-neutral-400 backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              Available for opportunities
             </span>
-            Available for opportunities
-          </span>
-        </motion.div>
+          </motion.div>
 
-        {/* Name */}
-        <motion.h1
-          variants={itemVariants}
-          transition={itemTransition}
-          className="text-5xl font-bold tracking-tight md:text-8xl"
-        >
-          <span className="block text-neutral-400 text-2xl md:text-3xl font-normal mb-2 tracking-widest uppercase">
-            Hey, I&apos;m
-          </span>
-          <span className="relative inline-block">
-            {/* Glow behind name */}
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 blur-2xl opacity-60 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 bg-clip-text text-transparent select-none"
-            >
-              SleepyLeo
+          {/* Greeting + Name */}
+          <motion.div variants={itemVariants} transition={itemTransition}>
+            <span className="block text-neutral-400 text-lg font-normal tracking-widest uppercase mb-1">
+              Hey, I&apos;m
             </span>
-            <span className="relative bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
-              SleepyLeo
-            </span>
-          </span>
-        </motion.h1>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+              <span className="relative inline-block">
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 blur-2xl opacity-60 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 bg-clip-text text-transparent select-none"
+                >
+                  SleepyLeo
+                </span>
+                <span className="relative bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
+                  SleepyLeo
+                </span>
+              </span>
+            </h1>
+          </motion.div>
 
-        {/* Flip Words */}
-        <motion.div
-          variants={itemVariants}
-          transition={itemTransition}
-          className="flex items-center gap-2 text-lg md:text-2xl text-neutral-400"
-        >
-          <span>I&apos;m a</span>
-          <FlipWords
-            words={words}
-            className="text-indigo-300 font-semibold"
-          />
-        </motion.div>
-
-        {/* Description */}
-        <motion.p
-          variants={itemVariants}
-          transition={itemTransition}
-          className="max-w-xl text-sm md:text-base leading-relaxed text-neutral-500"
-        >
-          Building things that work{" "}
-          <span className="text-neutral-400">(most of the time)</span> and
-          debugging code that shouldn&apos;t have broken in the first place.
-          Armed with TypeScript and an unhealthy amount of caffeine.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          variants={itemVariants}
-          transition={itemTransition}
-          className="flex flex-col sm:flex-row items-center gap-3 mt-2"
-        >
-          <Button
-            onClick={() => scrollToSection("projects")}
-            size="lg"
-            className="group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 px-8"
+          {/* Flip Words subtitle */}
+          <motion.div
+            variants={itemVariants}
+            transition={itemTransition}
+            className="flex items-center gap-2 text-lg md:text-xl text-neutral-400"
           >
-            <span className="relative z-10 flex items-center gap-2">
-              View My Work
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </span>
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          </Button>
+            <span>I&apos;m a</span>
+            <FlipWords words={words} className="text-indigo-300 font-semibold" />
+          </motion.div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              asChild
-              variant="ghost"
-              size="lg"
-              className="rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 px-5"
-            >
-              <a
-                href="https://github.com/SleepyLe0"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-              >
-                <Github className="h-5 w-5" />
-                <span className="ml-2">GitHub</span>
-              </a>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="lg"
-              className="rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 px-5"
-            >
-              <a
-                href="https://www.linkedin.com/in/kundids-khawmeesri-90814526a/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-5 w-5" />
-                <span className="ml-2">LinkedIn</span>
-              </a>
-            </Button>
-          </div>
-        </motion.div>
+          {/* Description */}
+          <motion.p
+            variants={itemVariants}
+            transition={itemTransition}
+            className="max-w-md text-sm md:text-base leading-relaxed text-neutral-500"
+          >
+            Building things that work{" "}
+            <span className="text-neutral-400">(most of the time)</span> and
+            debugging code that shouldn&apos;t have broken in the first place.
+            Fuelled by TypeScript and an unhealthy amount of matcha.
+          </motion.p>
 
-        {/* Stats row */}
+          {/* CTA Buttons */}
+          <motion.div
+            variants={itemVariants}
+            transition={itemTransition}
+            className="flex flex-col sm:flex-row items-start gap-3 mt-2"
+          >
+            <Button
+              onClick={() => scrollToSection("projects")}
+              size="lg"
+              className="group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 px-8"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                View My Work
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <Button
+                asChild
+                variant="ghost"
+                size="lg"
+                className="rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 px-5"
+              >
+                <a
+                  href="https://github.com/SleepyLe0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
+                >
+                  <Github className="h-5 w-5" />
+                  <span className="ml-2">GitHub</span>
+                </a>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                size="lg"
+                className="rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 px-5"
+              >
+                <a
+                  href="https://www.linkedin.com/in/kundids-khawmeesri-90814526a/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="h-5 w-5" />
+                  <span className="ml-2">LinkedIn</span>
+                </a>
+              </Button>
+            </div>
+          </motion.div>
+
+          {/* Stats row */}
+          <motion.div
+            variants={itemVariants}
+            transition={itemTransition}
+            className="flex items-center gap-8 mt-4 text-center"
+          >
+            {[
+              { label: "Projects Built", value: "10+" },
+              { label: "Cups of Matcha", value: "∞" },
+              { label: "Bugs Fixed", value: "Most" },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col gap-0.5">
+                <span className="text-2xl font-bold text-white">{stat.value}</span>
+                <span className="text-xs text-neutral-500 uppercase tracking-wider">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* ── RIGHT COLUMN: Profile photo with blob ── */}
         <motion.div
           variants={itemVariants}
           transition={itemTransition}
-          className="flex items-center gap-8 mt-4 text-center"
+          className="relative flex-shrink-0 flex items-center justify-center"
         >
-          {[
-            { label: "Projects Built", value: "10+" },
-            { label: "Cups of Coffee", value: "∞" },
-            { label: "Bugs Fixed", value: "Most" },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-0.5">
-              <span className="text-2xl font-bold text-white">{stat.value}</span>
-              <span className="text-xs text-neutral-500 uppercase tracking-wider">{stat.label}</span>
-            </div>
-          ))}
+          {/* Blob background shape */}
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 opacity-90"
+            style={{
+              borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%",
+              width: "360px",
+              height: "360px",
+            }}
+          />
+          {/* Subtle glow ring */}
+          <div
+            className="absolute inset-[-8px] bg-gradient-to-br from-indigo-500/30 via-violet-500/20 to-purple-500/30 blur-xl"
+            style={{ borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%" }}
+          />
+          {/* Profile image container */}
+          <div
+            className="relative overflow-hidden z-10"
+            style={{
+              width: "360px",
+              height: "360px",
+              borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%",
+            }}
+          >
+            <Image
+              src="/gunnie.png"
+              alt="SleepyLeo"
+              fill
+              className="object-cover object-top"
+              priority
+            />
+          </div>
         </motion.div>
       </motion.div>
 

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { GraduationCap, MapPin, Zap, Coffee, CheckCircle2 } from "lucide-react";
+import { GraduationCap, MapPin, Zap, Leaf, CheckCircle2 } from "lucide-react";
 
 interface TimelineItem {
   year: string;
@@ -54,7 +54,7 @@ const cardItems = [
   {
     key: "fuel" as const,
     label: "Runs On",
-    icon: Coffee,
+    icon: Leaf,
     color: "violet",
   },
 ];
