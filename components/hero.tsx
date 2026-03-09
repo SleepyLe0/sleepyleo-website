@@ -48,7 +48,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex h-screen min-h-[700px] flex-col items-center justify-center overflow-hidden bg-zinc-950"
+      className="relative flex min-h-screen min-h-[700px] flex-col items-center justify-center overflow-hidden bg-zinc-950 px-4"
     >
       {/* === Layer 1: Particle Field === */}
       <ParticleField className="z-0" count={90} connectionDistance={130} />
@@ -75,10 +75,10 @@ export function Hero() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12"
+        className="relative z-10 w-full max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-12 pt-20 pb-36 md:py-0"
       >
         {/* ── LEFT COLUMN: Text content ── */}
-        <div className="flex flex-col items-start gap-5 flex-1">
+        <div className="flex flex-col items-center md:items-start gap-4 md:gap-5 flex-1 text-center md:text-left">
           {/* Badge */}
           <motion.div variants={itemVariants} transition={itemTransition}>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-neutral-400 backdrop-blur-sm">
@@ -92,10 +92,10 @@ export function Hero() {
 
           {/* Greeting + Name */}
           <motion.div variants={itemVariants} transition={itemTransition}>
-            <span className="block text-neutral-400 text-lg font-normal tracking-widest uppercase mb-1">
+            <span className="block text-neutral-400 text-base md:text-lg font-normal tracking-widest uppercase mb-1">
               Hey, I&apos;m
             </span>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-tight">
               <span className="relative inline-block">
                 <span
                   aria-hidden="true"
@@ -114,7 +114,7 @@ export function Hero() {
           <motion.div
             variants={itemVariants}
             transition={itemTransition}
-            className="flex items-center gap-2 text-lg md:text-xl text-neutral-400"
+            className="flex items-center justify-center md:justify-start gap-2 text-base md:text-xl text-neutral-400"
           >
             <span>I&apos;m a</span>
             <FlipWords words={words} className="text-indigo-300 font-semibold" />
@@ -124,7 +124,7 @@ export function Hero() {
           <motion.p
             variants={itemVariants}
             transition={itemTransition}
-            className="max-w-md text-sm md:text-base leading-relaxed text-neutral-500"
+            className="max-w-md text-sm md:text-base leading-relaxed text-neutral-500 mx-auto md:mx-0"
           >
             Building things that work{" "}
             <span className="text-neutral-400">(most of the time)</span> and
@@ -136,12 +136,12 @@ export function Hero() {
           <motion.div
             variants={itemVariants}
             transition={itemTransition}
-            className="flex flex-col sm:flex-row items-start gap-3 mt-2"
+            className="flex flex-col sm:flex-row items-center md:items-start gap-3 mt-1 w-full sm:w-auto"
           >
             <Button
               onClick={() => scrollToSection("projects")}
               size="lg"
-              className="group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 px-8"
+              className="group relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 px-8 w-full sm:w-auto"
             >
               <span className="relative z-10 flex items-center gap-2">
                 View My Work
@@ -190,7 +190,7 @@ export function Hero() {
           <motion.div
             variants={itemVariants}
             transition={itemTransition}
-            className="flex items-center gap-8 mt-4 text-center"
+            className="flex items-center justify-center md:justify-start gap-6 md:gap-8 mt-2 text-center w-full"
           >
             {[
               { label: "Projects Built", value: "10+" },
@@ -198,8 +198,8 @@ export function Hero() {
               { label: "Bugs Fixed", value: "Most" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col gap-0.5">
-                <span className="text-2xl font-bold text-white">{stat.value}</span>
-                <span className="text-xs text-neutral-500 uppercase tracking-wider">{stat.label}</span>
+                <span className="text-xl md:text-2xl font-bold text-white">{stat.value}</span>
+                <span className="text-[10px] md:text-xs text-neutral-500 uppercase tracking-wider">{stat.label}</span>
               </div>
             ))}
           </motion.div>
@@ -211,28 +211,20 @@ export function Hero() {
           transition={itemTransition}
           className="relative flex-shrink-0 flex items-center justify-center"
         >
-          {/* Blob background shape */}
+          {/* Responsive blob size: 220px on mobile → 360px on md+ */}
           <div
             className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 opacity-90"
-            style={{
-              borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%",
-              width: "360px",
-              height: "360px",
-            }}
+            style={{ borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%" }}
           />
           {/* Subtle glow ring */}
           <div
             className="absolute inset-[-8px] bg-gradient-to-br from-indigo-500/30 via-violet-500/20 to-purple-500/30 blur-xl"
             style={{ borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%" }}
           />
-          {/* Profile image container */}
+          {/* Profile image container — fluid sizing via CSS */}
           <div
-            className="relative overflow-hidden z-10"
-            style={{
-              width: "360px",
-              height: "360px",
-              borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%",
-            }}
+            className="relative overflow-hidden z-10 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] md:w-[360px] md:h-[360px]"
+            style={{ borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%" }}
           >
             <Image
               src="/gunnie.png"

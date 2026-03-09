@@ -86,7 +86,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
     <section
       id="contact"
       ref={sectionRef}
-      className="relative bg-zinc-950 py-24 px-4 overflow-hidden"
+      className="relative bg-zinc-950 py-16 sm:py-24 px-4 overflow-hidden"
     >
       {/* Mouse spotlight */}
       {spotlight.visible && (
@@ -127,10 +127,10 @@ export function ContactSection({ profile }: ContactSectionProps) {
           <span className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-3 block">
             Contact
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             {profile?.ctaCopy || "Let's build something."}
           </h2>
-          <p className="text-neutral-400 max-w-xl">
+          <p className="text-neutral-400 text-sm sm:text-base max-w-xl">
             Whether it&apos;s a project collab, job opportunity, or just to say hi — my inbox is open.
           </p>
         </motion.div>

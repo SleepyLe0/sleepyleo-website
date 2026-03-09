@@ -89,7 +89,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
     <section
       id="about"
       ref={sectionRef}
-      className="relative bg-zinc-950 py-24 px-4 overflow-hidden"
+      className="relative bg-zinc-950 py-16 sm:py-24 px-4 overflow-hidden"
     >
       {/* Mouse spotlight */}
       {spotlight.visible && (
@@ -131,7 +131,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
           <span className="text-xs font-semibold uppercase tracking-widest text-indigo-400 mb-3 block">
             About Me
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             The human behind the code
           </h2>
 

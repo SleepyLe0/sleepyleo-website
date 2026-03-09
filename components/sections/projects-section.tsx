@@ -104,7 +104,7 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
       id="projects"
       ref={sectionRef}
       onMouseMove={handleMouseMove}
-      className="relative min-h-screen overflow-hidden bg-zinc-950 py-28 px-4"
+      className="relative min-h-screen overflow-hidden bg-zinc-950 py-16 sm:py-28 px-4"
     >
       {/* ── Background: section-level mouse spotlight ── */}
       <div
@@ -162,13 +162,13 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-20"
+          className="text-center mb-12 sm:mb-20"
         >
           <p className="text-xs uppercase tracking-[0.35em] text-indigo-400/80 mb-5">
             What I&apos;ve been building
           </p>
 
-          <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-none">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-none">
             My{" "}
             <span className="relative inline-block">
               <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
@@ -185,7 +185,7 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
           </p>
 
           {/* Animated stats */}
-          <div className="inline-flex items-center gap-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-8 py-4 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-5 sm:gap-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 sm:px-8 py-4 backdrop-blur-sm">
             {[
               { value: projectCount, suffix: "+", label: "Projects" },
               { value: commitCount, suffix: "+", label: "Commits" },

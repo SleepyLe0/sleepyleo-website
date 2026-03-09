@@ -119,7 +119,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
       <section
         id="skills"
         ref={sectionRef}
-        className="relative bg-zinc-950 py-24 px-4 overflow-hidden"
+        className="relative bg-zinc-950 py-16 sm:py-24 px-4 overflow-hidden"
       >
         {/* Mouse spotlight */}
         {spotlight.visible && (
@@ -160,10 +160,10 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
             <span className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3 block">
               Tech Stack
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
               Tools of the trade
             </h2>
-            <p className="text-neutral-400 max-w-xl">
+            <p className="text-neutral-400 text-sm sm:text-base max-w-xl">
               The technologies I reach for daily, and a few I&apos;m still getting cozy with.
               Hover a badge to see where I&apos;ve used it.
             </p>
