@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["@prisma/client", ".prisma/client", "@prisma/adapter-pg", "pg"],
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -39,6 +40,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "i.giphy.com",
+      },
+      {
+        protocol: "https",
+        hostname: "media1.giphy.com",
       },
     ],
   },

@@ -1,11 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Button } from "@/components/ui/button";
-import { ParticleField } from "@/components/ui/particle-field";
 import { ArrowRight, Github, Linkedin, ChevronDown } from "lucide-react";
+
+// Defer canvas animation — not needed for initial paint
+const ParticleField = dynamic(
+  () => import("@/components/ui/particle-field").then((m) => ({ default: m.ParticleField })),
+  { ssr: false }
+);
 
 const words = [
   "Fullstack Dev",

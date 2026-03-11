@@ -38,11 +38,18 @@ export function ParticleField({
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motionQuery.matches) return;
 
+    // Debounced resize — avoids re-initialising canvas on every pixel of drag
+    let resizeTimer: ReturnType<typeof setTimeout>;
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }, 150);
     };
-    resize();
+    // Run immediately on mount (no debounce)
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
     window.addEventListener("resize", resize);
 
     // Init particles
@@ -55,6 +62,7 @@ export function ParticleField({
       opacity: Math.random() * 0.5 + 0.2,
     }));
 
+    // passive: true — browser never waits for preventDefault, smoother scroll
     const onMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -62,30 +70,42 @@ export function ParticleField({
     const onMouseLeave = () => {
       mouseRef.current = { x: -9999, y: -9999 };
     };
-    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mousemove", onMouseMove, { passive: true });
     canvas.addEventListener("mouseleave", onMouseLeave);
 
-    const draw = () => {
+    // Pre-compute squared connection distance — avoids sqrt for the majority of far pairs
+    const connDistSq = connectionDistance * connectionDistance;
+    const mouseRadiusSq = mouseRadius * mouseRadius;
+
+    let lastFrameTime = 0;
+
+    const draw = (timestamp: number) => {
+      // Cap at ~30 fps — more than enough for a decorative background animation
+      if (timestamp - lastFrameTime < 33) {
+        animFrameRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTime = timestamp;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const particles = particlesRef.current;
       const mouse = mouseRef.current;
 
       for (const p of particles) {
-        // Mouse repulsion
+        // Mouse repulsion — use squared distance to skip sqrt when out of range
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouseRadius) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < mouseRadiusSq) {
+          const dist = Math.sqrt(distSq);
           const force = (mouseRadius - dist) / mouseRadius;
           p.vx += (dx / dist) * force * 0.3;
           p.vy += (dy / dist) * force * 0.3;
         }
 
-        // Dampen velocity
         p.vx *= 0.98;
         p.vy *= 0.98;
 
-        // Clamp speed
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         if (speed > 1.5) {
           p.vx = (p.vx / speed) * 1.5;
@@ -95,31 +115,30 @@ export function ParticleField({
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap edges
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        // Draw particle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(139, 92, 246, ${p.opacity})`; // violet-500
+        ctx.fillStyle = `rgba(139, 92, 246, ${p.opacity})`;
         ctx.fill();
       }
 
-      // Draw connections
+      // Draw connections — squared-distance check avoids sqrt for most pairs
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < connectionDistance) {
+          const distSq = dx * dx + dy * dy;
+          if (distSq < connDistSq) {
+            const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / connectionDistance) * 0.15;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${alpha})`; // indigo-500
+            ctx.strokeStyle = `rgba(99, 102, 241, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -129,7 +148,7 @@ export function ParticleField({
       animFrameRef.current = requestAnimationFrame(draw);
     };
 
-    draw();
+    animFrameRef.current = requestAnimationFrame(draw);
 
     const onMotionChange = (e: MediaQueryListEvent) => {
       if (e.matches) {
@@ -141,6 +160,7 @@ export function ParticleField({
 
     return () => {
       cancelAnimationFrame(animFrameRef.current);
+      clearTimeout(resizeTimer);
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("mouseleave", onMouseLeave);

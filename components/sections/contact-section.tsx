@@ -62,6 +62,7 @@ const defaultLinks = [
 
 export function ContactSection({ profile }: ContactSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const lastMoveRef = useRef(0);
   const [spotlight, setSpotlight] = useState({ x: 0, y: 0, visible: false });
 
   useEffect(() => {
@@ -69,6 +70,9 @@ export function ContactSection({ profile }: ContactSectionProps) {
     if (!section) return;
 
     const onMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastMoveRef.current < 32) return; // ~30fps cap
+      lastMoveRef.current = now;
       const rect = section.getBoundingClientRect();
       setSpotlight({ x: e.clientX - rect.left, y: e.clientY - rect.top, visible: true });
     };

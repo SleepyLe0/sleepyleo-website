@@ -96,7 +96,7 @@ export async function getTotalCommits(): Promise<number> {
         try {
           const res = await fetch(
             `https://api.github.com/repos/${username}/${name}/commits?per_page=1`,
-            { headers, next: { revalidate: 3600 } } // cache 1 hour
+            { headers, next: { revalidate: 86400 } } // cache 24 hours
           );
           if (!res.ok) return 0;
           const link = res.headers.get("link") ?? "";

@@ -63,6 +63,7 @@ function CodeLine({ text, style }: { text: string; style: React.CSSProperties })
 export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  const lastMoveRef = useRef(0);
   const [headerInView, setHeaderInView] = useState(false);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
@@ -86,8 +87,11 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
     return () => obs.disconnect();
   }, []);
 
-  // Section-level mouse tracking for the big spotlight
+  // Section-level mouse tracking — throttled to ~30fps
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const now = performance.now();
+    if (now - lastMoveRef.current < 32) return;
+    lastMoveRef.current = now;
     if (!sectionRef.current) return;
     const rect = sectionRef.current.getBoundingClientRect();
     setMouse({ x: e.clientX - rect.left, y: e.clientY - rect.top });

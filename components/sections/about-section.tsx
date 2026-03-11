@@ -83,6 +83,7 @@ const markdownComponents: React.ComponentProps<typeof ReactMarkdown>["components
 export function AboutSection({ profile }: AboutSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const lastMoveRef = useRef(0);
   const [spotlight, setSpotlight] = useState({ x: 0, y: 0, visible: false });
   const [backgroundExpanded, setBackgroundExpanded] = useState(false);
 
@@ -91,6 +92,9 @@ export function AboutSection({ profile }: AboutSectionProps) {
     if (!section) return;
 
     const onMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastMoveRef.current < 32) return; // ~30fps cap
+      lastMoveRef.current = now;
       const rect = section.getBoundingClientRect();
       mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       setSpotlight({ x: e.clientX - rect.left, y: e.clientY - rect.top, visible: true });

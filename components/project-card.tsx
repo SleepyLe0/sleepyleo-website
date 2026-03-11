@@ -150,10 +150,10 @@ export function ProjectCard({
               src={`/api/gif?url=${encodeURIComponent(project.memeUrl)}`}
               alt={`${project.name} meme`}
               fill
+              unoptimized
               sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
               className="object-cover opacity-60 group-hover:opacity-85 group-hover:scale-105 transition-all duration-700"
-              loading="eager"
-              unoptimized
+              loading="lazy"
             />
           ) : (
             <div
