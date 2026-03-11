@@ -2,7 +2,8 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { GraduationCap, MapPin, Zap, Leaf, CheckCircle2 } from "lucide-react";
+import { GraduationCap, MapPin, Zap, Leaf, CheckCircle2, ChevronDown } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface TimelineItem {
   year: string;
@@ -59,10 +60,31 @@ const cardItems = [
   },
 ];
 
+const markdownComponents: React.ComponentProps<typeof ReactMarkdown>["components"] = {
+  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+  strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+  em: ({ children }) => <em className="italic text-neutral-300">{children}</em>,
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline underline-offset-2 hover:text-indigo-300 transition-colors">
+      {children}
+    </a>
+  ),
+  ul: ({ children }) => <ul className="list-disc list-inside space-y-1 mb-2">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 mb-2">{children}</ol>,
+  li: ({ children }) => <li className="text-neutral-300">{children}</li>,
+  code: ({ children }) => (
+    <code className="px-1.5 py-0.5 rounded bg-white/[0.06] text-indigo-300 text-sm font-mono">{children}</code>
+  ),
+  h1: ({ children }) => <h1 className="text-xl font-bold text-white mb-2">{children}</h1>,
+  h2: ({ children }) => <h2 className="text-lg font-semibold text-white mb-2">{children}</h2>,
+  h3: ({ children }) => <h3 className="text-base font-semibold text-neutral-200 mb-1">{children}</h3>,
+};
+
 export function AboutSection({ profile }: AboutSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const [spotlight, setSpotlight] = useState({ x: 0, y: 0, visible: false });
+  const [backgroundExpanded, setBackgroundExpanded] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -136,9 +158,9 @@ export function AboutSection({ profile }: AboutSectionProps) {
           </h2>
 
           {profile ? (
-            <p className="text-neutral-400 text-lg leading-relaxed max-w-2xl">
-              {profile.bio}
-            </p>
+            <div className="text-neutral-400 text-lg leading-relaxed w-full">
+              <ReactMarkdown components={markdownComponents}>{profile.bio}</ReactMarkdown>
+            </div>
           ) : (
             <p className="text-neutral-600 text-lg">Profile not configured yet.</p>
           )}
@@ -155,7 +177,34 @@ export function AboutSection({ profile }: AboutSectionProps) {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="mb-10 rounded-2xl border border-white/5 bg-white/[0.02] p-6"
               >
-                <p className="text-neutral-300 leading-relaxed">{profile.background}</p>
+                <div className="relative">
+                  <div
+                    className={`text-neutral-300 leading-relaxed overflow-hidden transition-all duration-500 ${
+                      backgroundExpanded ? "max-h-[2000px]" : "max-h-[4.5rem]"
+                    }`}
+                  >
+                    <ReactMarkdown components={markdownComponents}>{profile.background}</ReactMarkdown>
+                  </div>
+
+                  {/* Gradient fade when collapsed */}
+                  {!backgroundExpanded && (
+                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[rgba(255,255,255,0.02)] to-transparent pointer-events-none" />
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setBackgroundExpanded((v) => !v)}
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                  <span>{backgroundExpanded ? "See less" : "See more"}</span>
+                  <motion.span
+                    animate={{ rotate: backgroundExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="inline-flex"
+                  >
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </motion.span>
+                </button>
               </motion.div>
             )}
 
