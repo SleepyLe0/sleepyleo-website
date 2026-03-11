@@ -227,9 +227,10 @@ export function Hero() {
             style={{ borderRadius: "60% 40% 55% 45% / 50% 45% 55% 50%" }}
           >
             <Image
-              src="/gunnie.png"
+              src="/gunnie.webp"
               alt="SleepyLeo"
               fill
+              sizes="(max-width: 640px) 220px, (max-width: 768px) 280px, 360px"
               className="object-cover object-top"
               priority
             />
