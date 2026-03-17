@@ -1,9 +1,11 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { GraduationCap, MapPin, Zap, Leaf, CheckCircle2, ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useIde } from "@/components/ide-context";
+import { CodeBlock } from "@/components/code-block";
 
 interface TimelineItem {
   year: string;
@@ -81,70 +83,20 @@ const markdownComponents: React.ComponentProps<typeof ReactMarkdown>["components
 };
 
 export function AboutSection({ profile }: AboutSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const lastMoveRef = useRef(0);
-  const [spotlight, setSpotlight] = useState({ x: 0, y: 0, visible: false });
+  const { getViewMode } = useIde();
   const [backgroundExpanded, setBackgroundExpanded] = useState(false);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const onMove = (e: MouseEvent) => {
-      const now = performance.now();
-      if (now - lastMoveRef.current < 32) return; // ~30fps cap
-      lastMoveRef.current = now;
-      const rect = section.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-      setSpotlight({ x: e.clientX - rect.left, y: e.clientY - rect.top, visible: true });
-    };
-    const onLeave = () => setSpotlight((s) => ({ ...s, visible: false }));
-
-    section.addEventListener("mousemove", onMove);
-    section.addEventListener("mouseleave", onLeave);
-    return () => {
-      section.removeEventListener("mousemove", onMove);
-      section.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
   const timeline: TimelineItem[] = Array.isArray(profile?.timeline) ? profile.timeline : [];
+
+  if (getViewMode("about") === "code") {
+    return <CodeBlock section="about" profile={profile} />;
+  }
 
   return (
     <section
       id="about"
-      ref={sectionRef}
-      className="relative bg-zinc-950 py-16 sm:py-24 px-4 overflow-hidden"
+      className="relative bg-transparent py-16 sm:py-24 px-4"
     >
-      {/* Mouse spotlight */}
-      {spotlight.visible && (
-        <div
-          className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(600px circle at ${spotlight.x}px ${spotlight.y}px, rgba(99,102,241,0.06), transparent 60%)`,
-          }}
-        />
-      )}
-
-      {/* Background blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-indigo-600/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-violet-600/10 blur-3xl" />
-
-      {/* Dot grid */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-        }}
-      />
-
-      {/* Top fade */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950 to-transparent" />
-      {/* Bottom fade */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-zinc-950 to-transparent" />
-
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section header */}
         <motion.div
@@ -179,7 +131,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="mb-10 rounded-2xl border border-white/5 bg-white/[0.02] p-6"
+                className="mb-10 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6"
               >
                 <div className="relative">
                   <div
@@ -192,7 +144,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
 
                   {/* Gradient fade when collapsed */}
                   {!backgroundExpanded && (
-                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[rgba(255,255,255,0.02)] to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-neutral-900/50 to-transparent pointer-events-none" />
                   )}
                 </div>
 
@@ -221,7 +173,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
-                  className="group rounded-2xl border border-white/5 bg-white/[0.02] p-5 hover:border-white/10 hover:bg-white/[0.04] transition-all"
+                  className="group rounded-2xl border border-neutral-800 bg-neutral-900/50 p-5 hover:border-neutral-700 hover:bg-neutral-900/70 transition-all"
                 >
                   <div className={`inline-flex rounded-lg p-2 mb-3 ${color === "indigo" ? "bg-indigo-500/10 text-indigo-400" : "bg-violet-500/10 text-violet-400"}`}>
                     <Icon className="h-4 w-4" />
@@ -273,7 +225,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2"
+              className="inline-flex items-center gap-2.5 rounded-full border border-neutral-800 bg-neutral-900/50 px-4 py-2"
             >
               <span className="relative flex h-2.5 w-2.5">
                 {profile.availableForHire ? (

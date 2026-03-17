@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
 import { motion } from "motion/react";
 import { Mail, Github, Linkedin, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { useIde } from "@/components/ide-context";
+import { CodeBlock } from "@/components/code-block";
 
 interface Profile {
   id: string;
@@ -61,64 +62,17 @@ const defaultLinks = [
 ];
 
 export function ContactSection({ profile }: ContactSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const lastMoveRef = useRef(0);
-  const [spotlight, setSpotlight] = useState({ x: 0, y: 0, visible: false });
+  const { getViewMode } = useIde();
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const onMove = (e: MouseEvent) => {
-      const now = performance.now();
-      if (now - lastMoveRef.current < 32) return; // ~30fps cap
-      lastMoveRef.current = now;
-      const rect = section.getBoundingClientRect();
-      setSpotlight({ x: e.clientX - rect.left, y: e.clientY - rect.top, visible: true });
-    };
-    const onLeave = () => setSpotlight((s) => ({ ...s, visible: false }));
-
-    section.addEventListener("mousemove", onMove);
-    section.addEventListener("mouseleave", onLeave);
-    return () => {
-      section.removeEventListener("mousemove", onMove);
-      section.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
+  if (getViewMode("contact") === "code") {
+    return <CodeBlock section="contact" profile={profile} />;
+  }
 
   return (
     <section
       id="contact"
-      ref={sectionRef}
-      className="relative bg-zinc-950 py-16 sm:py-24 px-4 overflow-hidden"
+      className="relative bg-transparent py-16 sm:py-24 px-4"
     >
-      {/* Mouse spotlight */}
-      {spotlight.visible && (
-        <div
-          className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(600px circle at ${spotlight.x}px ${spotlight.y}px, rgba(99,102,241,0.06), transparent 60%)`,
-          }}
-        />
-      )}
-
-      {/* Background blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-indigo-600/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-violet-600/10 blur-3xl" />
-
-      {/* Dot grid */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-        }}
-      />
-
-      {/* Top/bottom fades */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950 to-transparent" />
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-zinc-950 to-transparent" />
-
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section header */}
         <motion.div
@@ -146,7 +100,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="mb-10 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2"
+            className="mb-10 inline-flex items-center gap-2.5 rounded-full border border-neutral-800 bg-neutral-900/50 px-4 py-2"
           >
             <span className="relative flex h-2.5 w-2.5">
               {profile.availableForHire ? (
@@ -182,7 +136,7 @@ export function ContactSection({ profile }: ContactSectionProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
-                className={`group flex flex-col gap-3 rounded-2xl border border-white/5 bg-white/[0.02] p-6 transition-all ${isDisabled ? "cursor-default opacity-50" : "cursor-pointer hover:border-white/10"} ${colorClass}`}
+                className={`group flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 transition-all ${isDisabled ? "cursor-default opacity-50" : "cursor-pointer"} ${colorClass}`}
               >
                 <div className="flex items-center justify-between">
                   <div className={`inline-flex rounded-xl p-3 transition-colors ${iconClass}`}>
