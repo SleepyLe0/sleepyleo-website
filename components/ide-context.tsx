@@ -24,11 +24,11 @@ export const SECTIONS: SectionMeta[] = [
 interface IdeState {
   activeSection: SectionId;
   openTabs: SectionId[];
-  viewModes: Map<SectionId, ViewMode>;
+  viewMode: ViewMode;
   setActiveSection: (id: SectionId) => void;
   openTab: (id: SectionId) => void;
   closeTab: (id: SectionId) => void;
-  toggleView: (id: SectionId) => void;
+  toggleView: () => void;
   getViewMode: (id: SectionId) => ViewMode;
   navigateTo: (id: SectionId) => void;
 }
@@ -38,7 +38,7 @@ const IdeContext = createContext<IdeState | null>(null);
 export function IdeProvider({ children }: { children: ReactNode }) {
   const [activeSection, setActiveSectionState] = useState<SectionId>("home");
   const [openTabs, setOpenTabs] = useState<SectionId[]>(["home"]);
-  const [viewModes, setViewModes] = useState<Map<SectionId, ViewMode>>(new Map());
+  const [viewMode, setViewMode] = useState<ViewMode>("preview");
 
   const setActiveSection = useCallback((id: SectionId) => {
     setActiveSectionState(id);
@@ -62,17 +62,13 @@ export function IdeProvider({ children }: { children: ReactNode }) {
     });
   }, [openTabs]);
 
-  const toggleView = useCallback((id: SectionId) => {
-    setViewModes((prev) => {
-      const next = new Map(prev);
-      next.set(id, prev.get(id) === "code" ? "preview" : "code");
-      return next;
-    });
+  const toggleView = useCallback(() => {
+    setViewMode((prev) => (prev === "code" ? "preview" : "code"));
   }, []);
 
   const getViewMode = useCallback(
-    (id: SectionId): ViewMode => viewModes.get(id) ?? "preview",
-    [viewModes]
+    (_id: SectionId): ViewMode => viewMode,
+    [viewMode]
   );
 
   const navigateTo = useCallback(
@@ -84,7 +80,7 @@ export function IdeProvider({ children }: { children: ReactNode }) {
 
   return (
     <IdeContext.Provider value={{
-      activeSection, openTabs, viewModes,
+      activeSection, openTabs, viewMode,
       setActiveSection, openTab, closeTab,
       toggleView, getViewMode, navigateTo,
     }}>

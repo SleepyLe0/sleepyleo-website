@@ -17,7 +17,7 @@ export function SectionBar({ sectionId, filename }: SectionBarProps) {
       </span>
       <ViewToggle
         value={getViewMode(sectionId)}
-        onChange={() => toggleView(sectionId)}
+        onChange={toggleView}
       />
     </div>
   );
