@@ -44,7 +44,7 @@ export function Hero({ profile }: HeroProps) {
   };
 
   return (
-    <section id="home" className="px-6 py-10 md:px-10 md:py-14">
+    <section id="home" className={viewMode === "code" ? "" : "px-6 py-10 md:px-10 md:py-14"}>
       {viewMode === "code" ? (
         <CodeBlock section="hero" profile={profile} />
       ) : (

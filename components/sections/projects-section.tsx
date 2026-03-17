@@ -78,7 +78,7 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
   return (
     <section
       id="projects"
-      className="px-6 py-10 md:px-10 md:py-14"
+      className={getViewMode("projects") === "code" ? "" : "px-6 py-10 md:px-10 md:py-14"}
     >
       <div className="max-w-7xl mx-auto">
         {/* ── Code view ── */}
