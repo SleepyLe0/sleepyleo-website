@@ -47,7 +47,7 @@ export default async function Home() {
 
   return (
     <IdeShell profile={profile}>
-      <Hero />
+      <Hero profile={profile} />
 
       <Suspense fallback={null}><ProjectsData /></Suspense>
       <Suspense fallback={null}><AboutData /></Suspense>
