@@ -86,25 +86,24 @@ export function ProjectCard({
   featured?: boolean;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [spotlight, setSpotlight] = useState({ x: 0, y: 0, opacity: 0 });
   const rgb = accentRgb[index % accentRgb.length];
   const status = statusConfig[project.status] ?? {
     label: project.status,
     color: "bg-neutral-500/15 text-neutral-400 border-neutral-500/30",
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setSpotlight({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      opacity: 1,
-    });
-  };
+  // Long-press to reveal meme (mobile tap-hold) + hover reveal (desktop)
+  const [memeVisible, setMemeVisible] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleMouseLeave = () => {
-    setSpotlight((s) => ({ ...s, opacity: 0 }));
+  const startLongPress = () => {
+    longPressTimer.current = setTimeout(() => setMemeVisible(true), 500);
+  };
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
   };
 
   return (
@@ -114,6 +113,12 @@ export function ProjectCard({
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, delay: (index % 3) * 0.12, ease: "easeOut" }}
       className={`group relative h-full ${featured ? "md:col-span-2" : ""}`}
+      onMouseEnter={() => setMemeVisible(true)}
+      onMouseLeave={() => { setMemeVisible(false); cancelLongPress(); }}
+      onPointerDown={startLongPress}
+      onPointerUp={cancelLongPress}
+      onPointerCancel={cancelLongPress}
+      onPointerLeave={() => { setMemeVisible(false); cancelLongPress(); }}
     >
       {/* Outer glow on hover */}
       <div
@@ -127,32 +132,21 @@ export function ProjectCard({
       {/* Card */}
       <div
         ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
         className="relative h-full flex flex-col rounded-2xl border border-white/[0.06] bg-zinc-900/70 backdrop-blur-md overflow-hidden"
       >
-        {/* Mouse-tracking spotlight */}
-        <div
-          className="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300 rounded-2xl"
-          style={{
-            opacity: spotlight.opacity,
-            background: `radial-gradient(400px circle at ${spotlight.x}px ${spotlight.y}px, rgba(${rgb},0.12), transparent 60%)`,
-          }}
-        />
-
         {/* Inner border highlight (always subtle) */}
         <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/[0.04] group-hover:ring-white/[0.1] transition-all duration-500" />
 
         {/* Image */}
         <div className={`relative ${featured ? "h-56" : "h-40"} w-full shrink-0 overflow-hidden`}>
-          {project.memeUrl ? (
+          {project.memeUrl && memeVisible ? (
             <Image
               src={`/api/gif?url=${encodeURIComponent(project.memeUrl)}`}
               alt={`${project.name} meme`}
               fill
               unoptimized
               sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
-              className="object-cover opacity-60 group-hover:opacity-85 group-hover:scale-105 transition-all duration-700"
+              className="object-cover"
               loading="lazy"
             />
           ) : (
