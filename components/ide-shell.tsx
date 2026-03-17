@@ -1,7 +1,7 @@
 // components/ide-shell.tsx
 "use client";
 
-import { useCallback, useEffect, ReactNode } from "react";
+import { ReactNode } from "react";
 import { IdeProvider, SECTIONS, SectionId, useIde } from "@/components/ide-context";
 import { IdeExplorer } from "@/components/ide-explorer";
 import { IdeTabs } from "@/components/ide-tabs";
@@ -18,39 +18,17 @@ interface Profile {
 }
 
 interface IdeShellProps {
-  children: ReactNode;
   profile: Profile | null;
+  sections: Record<SectionId, ReactNode>;
+  footer?: ReactNode;
 }
 
-// Title bar height: h-8 = 32px, status bar: h-5 = 20px → sidebar height = 100vh - 52px
-const TITLE_H = 32;
-const STATUS_H = 20;
-const SIDEBAR_H = `calc(100vh - ${TITLE_H + STATUS_H}px)`;
+// Title bar: h-8=32px, status bar: h-5=20px → sidebar height = 100vh − 52px
+const SIDEBAR_H = "calc(100vh - 52px)";
+const MOBILE_TOP_H = 44; // h-11
 
-// Mobile top bar: h-11 = 44px, breadcrumb: h-6 = 24px
-const MOBILE_TOP_H = 44;
-const MOBILE_BREAD_H = 24;
-const MOBILE_BOTTOM_H = 56; // h-14
-
-function IdeShellInner({ children, profile }: IdeShellProps) {
-  const { activeSection, setActiveSection, navigateTo, getViewMode, toggleView } = useIde();
-
-  // IntersectionObserver on the viewport (normal document scroll)
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    SECTIONS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id as SectionId); },
-        { threshold: 0.3, rootMargin: "-80px 0px -20% 0px" }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach((o) => o.disconnect());
-  }, [setActiveSection]);
-
+function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
+  const { activeSection, navigateTo, getViewMode, toggleView } = useIde();
   const p = profile;
 
   return (
@@ -95,13 +73,13 @@ function IdeShellInner({ children, profile }: IdeShellProps) {
         </span>
       </div>
 
-      {/* ── Main body: sidebar + editor ── */}
+      {/* ── Main body ── */}
       <div className="flex">
 
-        {/* ── Desktop left panel: activity bar + explorer (sticky) ── */}
+        {/* Desktop left panel: activity bar + explorer (sticky) */}
         <div
           className="sticky hidden flex-shrink-0 lg:flex"
-          style={{ top: TITLE_H, height: SIDEBAR_H }}
+          style={{ top: 32, height: SIDEBAR_H }}
         >
           {/* Activity bar */}
           <div className="flex w-10 flex-col items-center border-r border-neutral-800 bg-[#111] py-2">
@@ -133,33 +111,36 @@ function IdeShellInner({ children, profile }: IdeShellProps) {
           />
         </div>
 
-        {/* ── Editor column ── */}
+        {/* Editor column */}
         <div className="flex min-w-0 flex-1 flex-col">
 
-          {/* Tabs — sticky below title bar (desktop only) */}
-          <div
-            className="sticky z-40 hidden lg:block"
-            style={{ top: TITLE_H }}
-          >
+          {/* Tabs — sticky below title bar (desktop) */}
+          <div className="sticky z-40 hidden lg:block" style={{ top: 32 }}>
             <IdeTabs />
           </div>
 
-          {/* Toolbar — sticky below tabs (desktop only) */}
-          <div
-            className="sticky z-40 hidden lg:block"
-            style={{ top: TITLE_H + 32 }} // title + tabs height
-          >
+          {/* Toolbar — sticky below tabs (desktop) */}
+          <div className="sticky z-40 hidden lg:block" style={{ top: 32 + 32 }}>
             <IdeToolbar />
           </div>
 
-          {/* Content — normal document flow, no overflow tricks */}
-          <div className="flex-1">
-            {children}
+          {/* Section content — only active section is visible */}
+          <div className="min-h-[calc(100vh-52px)]">
+            {(Object.entries(sections) as [SectionId, ReactNode][]).map(([id, content]) => (
+              <div key={id} className={activeSection === id ? "block" : "hidden"}>
+                {content}
+              </div>
+            ))}
+            {footer && (
+              <div className={activeSection === "contact" ? "block" : "hidden"}>
+                {footer}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Desktop: Status bar — sticky bottom ── */}
+      {/* Desktop: Status bar — sticky bottom */}
       <div className="sticky bottom-0 z-50 hidden lg:block">
         <IdeStatusBar
           availableForHire={p?.availableForHire ?? false}
@@ -167,10 +148,8 @@ function IdeShellInner({ children, profile }: IdeShellProps) {
         />
       </div>
 
-      {/* ── Mobile: Bottom tab bar — sticky bottom ── */}
-      <nav
-        className="sticky bottom-0 z-50 flex h-14 items-center justify-around border-t border-neutral-800 bg-[#111] px-2 pb-1 lg:hidden"
-      >
+      {/* Mobile: Bottom tab bar — sticky bottom */}
+      <nav className="sticky bottom-0 z-50 flex h-14 items-center justify-around border-t border-neutral-800 bg-[#111] px-2 pb-1 lg:hidden">
         {SECTIONS.map(({ id, label }) => {
           const icons: Record<string, ReactNode> = {
             home:     <Home size={18} />,
@@ -198,16 +177,10 @@ function IdeShellInner({ children, profile }: IdeShellProps) {
   );
 }
 
-// Outer component — normal scrollIntoView works now (document scroll)
-export function IdeShell({ children, profile }: IdeShellProps) {
-  const navigate = useCallback((id: SectionId) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-
+export function IdeShell({ profile, sections, footer }: IdeShellProps) {
   return (
-    <IdeProvider onNavigate={navigate}>
-      <IdeShellInner profile={profile}>{children}</IdeShellInner>
+    <IdeProvider>
+      <IdeShellInner profile={profile} sections={sections} footer={footer} />
     </IdeProvider>
   );
 }

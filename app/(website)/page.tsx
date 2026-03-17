@@ -11,7 +11,6 @@ import { DogBreedQuizClient } from "@/components/dog-breed-quiz-client";
 
 export const revalidate = 3600;
 
-// Fetch profile once for IdeShell chrome + Hero code block
 async function getProfileData() {
   const result = await getProfile();
   return result.success ? result.data : null;
@@ -46,15 +45,16 @@ export default async function Home() {
   const profile = await getProfileData();
 
   return (
-    <IdeShell profile={profile}>
-      <Hero profile={profile} />
-
-      <Suspense fallback={null}><ProjectsData /></Suspense>
-      <Suspense fallback={null}><AboutData /></Suspense>
-      <Suspense fallback={null}><SkillsData /></Suspense>
-      <Suspense fallback={null}><ContactData /></Suspense>
-
-      <DogBreedQuizClient adminUrl={process.env.ADMIN_URL ?? "http://localhost:3001"} />
-    </IdeShell>
+    <IdeShell
+      profile={profile}
+      sections={{
+        home:     <Hero profile={profile} />,
+        projects: <Suspense fallback={null}><ProjectsData /></Suspense>,
+        about:    <Suspense fallback={null}><AboutData /></Suspense>,
+        skills:   <Suspense fallback={null}><SkillsData /></Suspense>,
+        contact:  <Suspense fallback={null}><ContactData /></Suspense>,
+      }}
+      footer={<DogBreedQuizClient adminUrl={process.env.ADMIN_URL ?? "http://localhost:3001"} />}
+    />
   );
 }

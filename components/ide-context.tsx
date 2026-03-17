@@ -35,13 +35,7 @@ interface IdeState {
 
 const IdeContext = createContext<IdeState | null>(null);
 
-export function IdeProvider({
-  children,
-  onNavigate,
-}: {
-  children: ReactNode;
-  onNavigate: (id: SectionId) => void;
-}) {
+export function IdeProvider({ children }: { children: ReactNode }) {
   const [activeSection, setActiveSectionState] = useState<SectionId>("home");
   const [openTabs, setOpenTabs] = useState<SectionId[]>(["home"]);
   const [viewModes, setViewModes] = useState<Map<SectionId, ViewMode>>(new Map());
@@ -84,9 +78,8 @@ export function IdeProvider({
   const navigateTo = useCallback(
     (id: SectionId) => {
       openTab(id);
-      onNavigate(id);
     },
-    [openTab, onNavigate]
+    [openTab]
   );
 
   return (
