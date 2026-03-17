@@ -1,17 +1,4 @@
-import { Navbar } from "@/components/navbar";
-import { PageTransition } from "@/components/page-transition";
-
-export default function WebsiteLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <>
-      <Navbar />
-      <main id="main-content">
-        <PageTransition>{children}</PageTransition>
-      </main>
-    </>
-  );
+// app/(website)/layout.tsx
+export default function WebsiteLayout({ children }: { children: React.ReactNode }) {
+  return <main id="main-content">{children}</main>;
 }
