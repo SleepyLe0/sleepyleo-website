@@ -52,7 +52,6 @@ function useCounter(target: number, inView: boolean) {
 }
 
 export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerInView, setHeaderInView] = useState(false);
 
@@ -79,30 +78,9 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
   return (
     <section
       id="projects"
-      ref={sectionRef}
-      className="relative min-h-screen overflow-hidden bg-zinc-950 py-16 sm:py-28 px-4"
+      className="px-6 py-10 md:px-10 md:py-14"
     >
-      {/* ── Background: dot grid ── */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.3]"
-        style={{
-          backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-          maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
-        }}
-      />
-
-      {/* ── Top transition bridge — blends from hero ── */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 z-10">
-        {/* Fade in from hero's zinc-950 */}
-        <div className="h-32 bg-gradient-to-b from-zinc-950 to-transparent" />
-        {/* Indigo glow echo — continues hero's aurora */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-64 w-[600px] rounded-full bg-indigo-600/6 blur-[80px]" />
-        {/* Hairline separator glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-2/3 bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* ── Code view ── */}
         {getViewMode("projects") === "code" ? (
           <CodeBlock section="projects" projects={projects} />
@@ -123,12 +101,8 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
 
               <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-none">
                 My{" "}
-                <span className="relative inline-block">
-                  <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
-                    Projects
-                  </span>
-                  {/* Underline glow */}
-                  <span className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 opacity-60" />
+                <span className="text-indigo-400">
+                  Projects
                 </span>
               </h2>
 
