@@ -131,7 +131,7 @@ function IdeShellInner({ children, profile }: IdeShellProps) {
           </div>
 
           {/* Scrollable content */}
-          <div ref={editorRef} className="flex-1 overflow-y-auto">
+          <div ref={editorRef} id="ide-editor" className="flex-1 overflow-y-auto">
             {children}
           </div>
         </div>
@@ -177,8 +177,14 @@ function IdeShellInner({ children, profile }: IdeShellProps) {
 // Outer component — sets up IdeProvider with scroll navigation callback
 export function IdeShell({ children, profile }: IdeShellProps) {
   const navigate = useCallback((id: SectionId) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const container = document.getElementById("ide-editor");
+    const target = document.getElementById(id);
+    if (container && target) {
+      const offset = target.offsetTop - container.offsetTop;
+      container.scrollTo({ top: offset, behavior: "smooth" });
+    } else if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, []);
 
   return (

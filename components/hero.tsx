@@ -75,13 +75,13 @@ export function Hero({ profile }: HeroProps) {
             <h1 className="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl">
               {profile?.name ?? "SleepyLeo"}
             </h1>
-            <p className="mb-4 text-sm text-neutral-500">
+            <div className="mb-4 text-sm text-neutral-500">
               I&apos;m a{" "}
               <FlipWords
                 words={words}
                 className="font-semibold text-indigo-400"
               />
-            </p>
+            </div>
             <p className="mb-6 max-w-md text-sm leading-relaxed text-neutral-500">
               {profile?.bio ??
                 "Building things with TypeScript, Next.js and an unreasonable amount of matcha."}
