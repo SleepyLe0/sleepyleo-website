@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
+import { SectionBar } from "@/components/section-bar";
 
 interface Skill {
   id: string;
@@ -79,16 +80,14 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
     (cat) => grouped[cat]?.length > 0
   );
 
-  if (getViewMode("skills") === "code") {
-    return <CodeBlock section="skills" skills={skills} />;
-  }
-
   return (
     <TooltipProvider delayDuration={200}>
-      <section
-        id="skills"
-        className="relative bg-transparent py-16 sm:py-24 px-4"
-      >
+      <section id="skills">
+        <SectionBar sectionId="skills" filename="skills.tsx" />
+        {getViewMode("skills") === "code" ? (
+          <CodeBlock section="skills" skills={skills} />
+        ) : (
+        <div className="relative bg-transparent py-16 sm:py-24 px-4">
         <div className="relative z-10 max-w-4xl mx-auto">
           {/* Section header */}
           <motion.div
@@ -155,6 +154,8 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
             </div>
           )}
         </div>
+        </div>
+        )}
       </section>
     </TooltipProvider>
   );

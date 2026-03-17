@@ -6,6 +6,7 @@ import { GraduationCap, MapPin, Zap, Leaf, CheckCircle2, ChevronDown } from "luc
 import ReactMarkdown from "react-markdown";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
+import { SectionBar } from "@/components/section-bar";
 
 interface TimelineItem {
   year: string;
@@ -88,15 +89,13 @@ export function AboutSection({ profile }: AboutSectionProps) {
 
   const timeline: TimelineItem[] = Array.isArray(profile?.timeline) ? profile.timeline : [];
 
-  if (getViewMode("about") === "code") {
-    return <CodeBlock section="about" profile={profile} />;
-  }
-
   return (
-    <section
-      id="about"
-      className="relative bg-transparent py-16 sm:py-24 px-4"
-    >
+    <section id="about">
+      <SectionBar sectionId="about" filename="about.tsx" />
+      {getViewMode("about") === "code" ? (
+        <CodeBlock section="about" profile={profile} />
+      ) : (
+      <div className="relative bg-transparent py-16 sm:py-24 px-4">
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section header */}
         <motion.div
@@ -250,6 +249,8 @@ export function AboutSection({ profile }: AboutSectionProps) {
           </div>
         )}
       </div>
+      </div>
+      )}
     </section>
   );
 }

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Mail, Github, Linkedin, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
+import { SectionBar } from "@/components/section-bar";
 
 interface Profile {
   id: string;
@@ -64,15 +65,13 @@ const defaultLinks = [
 export function ContactSection({ profile }: ContactSectionProps) {
   const { getViewMode } = useIde();
 
-  if (getViewMode("contact") === "code") {
-    return <CodeBlock section="contact" profile={profile} />;
-  }
-
   return (
-    <section
-      id="contact"
-      className="relative bg-transparent py-16 sm:py-24 px-4"
-    >
+    <section id="contact">
+      <SectionBar sectionId="contact" filename="contact.tsx" />
+      {getViewMode("contact") === "code" ? (
+        <CodeBlock section="contact" profile={profile} />
+      ) : (
+      <div className="relative bg-transparent py-16 sm:py-24 px-4">
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section header */}
         <motion.div
@@ -155,6 +154,8 @@ export function ContactSection({ profile }: ContactSectionProps) {
           })}
         </div>
       </div>
+      </div>
+      )}
     </section>
   );
 }

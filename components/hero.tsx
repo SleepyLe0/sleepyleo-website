@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Github, Linkedin } from "lucide-react";
 import { CodeBlock } from "@/components/code-block";
 import { useIde } from "@/components/ide-context";
+import { SectionBar } from "@/components/section-bar";
 
 interface Profile {
   name: string | null;
@@ -44,10 +45,12 @@ export function Hero({ profile }: HeroProps) {
   };
 
   return (
-    <section id="home" className={viewMode === "code" ? "" : "px-6 py-10 md:px-10 md:py-14"}>
+    <section id="home">
+      <SectionBar sectionId="home" filename="hero.tsx" />
       {viewMode === "code" ? (
         <CodeBlock section="hero" profile={profile} />
       ) : (
+        <div className="px-6 py-10 md:px-10 md:py-14">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -136,6 +139,7 @@ export function Hero({ profile }: HeroProps) {
             )}
           </div>
         </motion.div>
+        </div>
       )}
     </section>
   );
