@@ -46,8 +46,8 @@ export function IdeExplorer({
           <span>pages</span>
         </div>
 
-        {/* Section files */}
-        {SECTIONS.map((sec) => (
+        {/* Section files (pages only) */}
+        {SECTIONS.filter((s) => s.path.startsWith("pages/")).map((sec) => (
           <button
             key={sec.id}
             onClick={() => navigateTo(sec.id)}
@@ -68,6 +68,24 @@ export function IdeExplorer({
           <span>📁</span>
           <span>utils</span>
         </div>
+
+        {/* dogbreed.tsx */}
+        {(() => {
+          const sec = SECTIONS.find((s) => s.id === "dogbreed")!;
+          return (
+            <button
+              onClick={() => navigateTo("dogbreed")}
+              className={`flex w-full items-center gap-1.5 border-l-2 py-1 pl-8 pr-3 font-mono text-[11px] transition-colors ${
+                activeSection === "dogbreed"
+                  ? "border-indigo-500 bg-neutral-800/60 text-white"
+                  : "border-transparent text-neutral-500 hover:bg-neutral-800/30 hover:text-neutral-300"
+              }`}
+            >
+              <span className="text-[10px]">🐶</span>
+              {sec.file}
+            </button>
+          );
+        })()}
 
         {/* matcha.ts easter egg */}
         <Popover>

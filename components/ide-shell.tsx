@@ -18,14 +18,13 @@ interface Profile {
 interface IdeShellProps {
   profile: Profile | null;
   sections: Record<SectionId, ReactNode>;
-  footer?: ReactNode;
 }
 
 // Title bar: h-8=32px, status bar: h-5=20px → sidebar height = 100vh − 52px
 const SIDEBAR_H = "calc(100vh - 52px)";
 const MOBILE_TOP_H = 44; // h-11
 
-function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
+function IdeShellInner({ profile, sections }: IdeShellProps) {
   const { activeSection, navigateTo } = useIde();
   const p = profile;
 
@@ -120,11 +119,6 @@ function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
                 {content}
               </div>
             ))}
-            {footer && (
-              <div className={activeSection === "contact" ? "block" : "hidden"}>
-                {footer}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -166,10 +160,10 @@ function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
   );
 }
 
-export function IdeShell({ profile, sections, footer }: IdeShellProps) {
+export function IdeShell({ profile, sections }: IdeShellProps) {
   return (
     <IdeProvider>
-      <IdeShellInner profile={profile} sections={sections} footer={footer} />
+      <IdeShellInner profile={profile} sections={sections} />
     </IdeProvider>
   );
 }

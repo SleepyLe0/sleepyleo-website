@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 
-export type SectionId = "home" | "projects" | "about" | "skills" | "contact";
+export type SectionId = "home" | "projects" | "about" | "skills" | "contact" | "dogbreed";
 export type ViewMode = "preview" | "code";
 
 export interface SectionMeta {
@@ -14,11 +14,12 @@ export interface SectionMeta {
 }
 
 export const SECTIONS: SectionMeta[] = [
-  { id: "home",     file: "hero.tsx",     path: "pages/hero.tsx",     label: "Home"    },
-  { id: "projects", file: "projects.tsx", path: "pages/projects.tsx", label: "Projects"},
-  { id: "about",    file: "about.tsx",    path: "pages/about.tsx",    label: "About"   },
-  { id: "skills",   file: "skills.tsx",   path: "pages/skills.tsx",   label: "Skills"  },
-  { id: "contact",  file: "contact.tsx",  path: "pages/contact.tsx",  label: "Contact" },
+  { id: "home",      file: "hero.tsx",       path: "pages/hero.tsx",           label: "Home"      },
+  { id: "projects",  file: "projects.tsx",   path: "pages/projects.tsx",       label: "Projects"  },
+  { id: "about",     file: "about.tsx",      path: "pages/about.tsx",          label: "About"     },
+  { id: "skills",    file: "skills.tsx",     path: "pages/skills.tsx",         label: "Skills"    },
+  { id: "contact",   file: "contact.tsx",    path: "pages/contact.tsx",        label: "Contact"   },
+  { id: "dogbreed",  file: "dogbreed.tsx",   path: "utils/dogbreed.tsx",       label: "Dog Breed" },
 ];
 
 interface IdeState {
