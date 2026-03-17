@@ -24,7 +24,7 @@ export function IdeExplorer({
   const { activeSection, navigateTo } = useIde();
 
   return (
-    <aside className="flex w-[200px] flex-shrink-0 flex-col border-r border-neutral-800 bg-[#0d0d0d]">
+    <aside className="flex h-full w-[200px] flex-shrink-0 flex-col border-r border-neutral-800 bg-[#0d0d0d]">
       {/* Header */}
       <div className="border-b border-neutral-800 px-3 py-2 font-mono text-[9px] uppercase tracking-[2.5px] text-neutral-600">
         Explorer
