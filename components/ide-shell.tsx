@@ -8,7 +8,6 @@ import { IdeTabs } from "@/components/ide-tabs";
 import { IdeToolbar } from "@/components/ide-toolbar";
 import { IdeStatusBar } from "@/components/ide-statusbar";
 import { Home, FolderOpen, Search, Settings, GitBranch } from "lucide-react";
-import { ViewToggle } from "@/components/view-toggle";
 
 interface Profile {
   name: string | null;
@@ -28,7 +27,7 @@ const SIDEBAR_H = "calc(100vh - 52px)";
 const MOBILE_TOP_H = 44; // h-11
 
 function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
-  const { activeSection, navigateTo, getViewMode, toggleView } = useIde();
+  const { activeSection, navigateTo } = useIde();
   const p = profile;
 
   return (
@@ -55,10 +54,6 @@ function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
             {p?.name ?? "SleepyLeo"}
           </span>
         </div>
-        <ViewToggle
-          value={getViewMode(activeSection)}
-          onChange={() => toggleView(activeSection)}
-        />
       </div>
 
       {/* ── Mobile breadcrumb — sticky below top bar ── */}
