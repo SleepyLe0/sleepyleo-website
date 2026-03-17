@@ -5,7 +5,6 @@ import { ReactNode } from "react";
 import { IdeProvider, SECTIONS, SectionId, useIde } from "@/components/ide-context";
 import { IdeExplorer } from "@/components/ide-explorer";
 import { IdeTabs } from "@/components/ide-tabs";
-import { IdeToolbar } from "@/components/ide-toolbar";
 import { IdeStatusBar } from "@/components/ide-statusbar";
 import { Home, FolderOpen, Search, Settings, GitBranch } from "lucide-react";
 
@@ -112,11 +111,6 @@ function IdeShellInner({ profile, sections, footer }: IdeShellProps) {
           {/* Tabs — sticky below title bar (desktop) */}
           <div className="sticky z-40 hidden lg:block" style={{ top: 32 }}>
             <IdeTabs />
-          </div>
-
-          {/* Toolbar — sticky below tabs (desktop) */}
-          <div className="sticky z-40 hidden lg:block" style={{ top: 32 + 32 }}>
-            <IdeToolbar />
           </div>
 
           {/* Section content — only active section is visible */}
