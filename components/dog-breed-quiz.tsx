@@ -1,115 +1,173 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 const breeds = [
   { name: "Golden Retriever", correct: false },
-  { name: "Husky", correct: false },
-  { name: "French Bulldog", correct: true },
-  { name: "Poodle", correct: false },
+  { name: "Husky",            correct: false },
+  { name: "French Bulldog",   correct: true  },
+  { name: "Poodle",           correct: false },
 ];
 
 const wrongMessages = [
-  "Hmm, good choice but not quite...",
-  "Respectable, but wrong answer.",
-  "Try again, you're overthinking it.",
-  "Nope! Think smaller and snortier.",
+  "TypeError: wrong answer — expected 'French Bulldog'",
+  "AssertionError: taste.level < required",
+  "404: Good taste not found. Try again.",
+  "RangeError: answer out of acceptable bounds",
 ];
 
-function pickRandomWrongMessage() {
-  return wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
+function pickRandom<T>(arr: T[]) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [wrongMessage, setWrongMessage] = useState("");
+  const [wrongMsg, setWrongMsg] = useState("");
 
   const handleSelect = (breed: (typeof breeds)[number]) => {
+    if (selected) return; // lock after first pick
     setSelected(breed.name);
-    if (!breed.correct) {
-      setWrongMessage(pickRandomWrongMessage());
-    }
+    if (!breed.correct) setWrongMsg(pickRandom(wrongMessages));
   };
 
   const isCorrect = selected === "French Bulldog";
 
   return (
-    <section className="relative bg-zinc-950 py-20 px-4">
-      {/* Top separator line */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-px w-1/2 bg-linear-to-r from-transparent via-white/10 to-transparent" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.6 }}
-        className="max-w-md mx-auto text-center"
-      >
-        <p className="text-neutral-700 text-[10px] uppercase tracking-[0.3em] mb-3">
-          One more thing...
-        </p>
-        <h3 className="text-neutral-500 text-sm mb-6">
-          What&apos;s the best dog breed?
-        </h3>
-
-        <div className="flex flex-wrap justify-center gap-2 mb-5">
-          {breeds.map((breed) => (
-            <motion.button
-              key={breed.name}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => handleSelect(breed)}
-              className={`px-3.5 py-1.5 rounded-full text-xs border transition-all duration-200 ${
-                selected === breed.name
-                  ? breed.correct
-                    ? "border-indigo-500/50 bg-indigo-500/10 text-indigo-400 shadow-sm shadow-indigo-500/10"
-                    : "border-red-500/30 bg-red-500/5 text-red-400/70"
-                  : "border-white/5 text-neutral-600 hover:border-white/15 hover:text-neutral-400 hover:bg-white/3"
-              }`}
-            >
-              {breed.name}
-            </motion.button>
-          ))}
+    <div className="w-full max-w-xl mx-auto font-mono">
+      {/* Fake terminal window */}
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900/60 overflow-hidden">
+        {/* Terminal title bar */}
+        <div className="flex items-center gap-1.5 border-b border-neutral-800 bg-neutral-900 px-4 py-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70" />
+          <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
+          <span className="ml-3 text-[10px] text-neutral-600">dogbreed.tsx — quiz runtime</span>
         </div>
 
-        <AnimatePresence mode="wait">
-          {selected && !isCorrect && (
-            <motion.p
-              key="wrong"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="text-neutral-600 text-xs"
-            >
-              {wrongMessage}
-            </motion.p>
-          )}
-          {isCorrect && (
-            <motion.div
-              key="correct"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-2"
-            >
-              <p className="text-indigo-400/70 text-xs">
-                Correct! You have great taste. 🐾
-              </p>
-              <a
-                href={adminUrl}
-                className="inline-block text-[10px] text-neutral-700 hover:text-indigo-400 transition-colors underline underline-offset-2 decoration-neutral-800 hover:decoration-indigo-500/50"
-              >
-                You&apos;ve earned a secret passage →
-              </a>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Terminal body */}
+        <div className="p-5 space-y-4 text-[12px] leading-relaxed">
+          {/* Static "code" lines */}
+          <div className="space-y-1">
+            <p className="text-neutral-600">
+              <span className="text-indigo-400">const</span>{" "}
+              <span className="text-sky-300">question</span>{" "}
+              <span className="text-neutral-500">=</span>{" "}
+              <span className="text-amber-300/80">&quot;What&apos;s the best dog breed?&quot;</span>
+              <span className="text-neutral-500">;</span>
+            </p>
+            <p className="text-neutral-600">
+              <span className="text-indigo-400">const</span>{" "}
+              <span className="text-sky-300">options</span>{" "}
+              <span className="text-neutral-500">= [</span>
+              {breeds.map((b, i) => (
+                <span key={b.name}>
+                  <span className="text-amber-300/60">&quot;{b.name}&quot;</span>
+                  {i < breeds.length - 1 && <span className="text-neutral-600">, </span>}
+                </span>
+              ))}
+              <span className="text-neutral-500">];</span>
+            </p>
+          </div>
 
-        {/* Footer credit */}
-        <p className="mt-12 text-[10px] text-neutral-800 uppercase tracking-widest">
-          Built with ☕ by SleepyLeo
-        </p>
-      </motion.div>
-    </section>
+          <div className="border-t border-neutral-800/60" />
+
+          {/* Prompt */}
+          <div>
+            <p className="text-neutral-500 text-[11px] mb-3">
+              <span className="text-green-400">▶</span> Select answer:{" "}
+              <span className="text-neutral-600">// choose wisely</span>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {breeds.map((breed) => {
+                const isSelected = selected === breed.name;
+                return (
+                  <motion.button
+                    key={breed.name}
+                    whileHover={!selected ? { scale: 1.03 } : {}}
+                    whileTap={!selected ? { scale: 0.97 } : {}}
+                    onClick={() => handleSelect(breed)}
+                    disabled={!!selected}
+                    className={`rounded border px-3 py-1.5 text-[11px] transition-all duration-200 ${
+                      isSelected
+                        ? breed.correct
+                          ? "border-green-500/40 bg-green-500/10 text-green-400"
+                          : "border-red-500/30 bg-red-500/5 text-red-400"
+                        : selected
+                          ? "border-neutral-800 text-neutral-700 cursor-default"
+                          : "border-neutral-700 text-neutral-400 hover:border-indigo-500/50 hover:bg-indigo-500/5 hover:text-indigo-300 cursor-pointer"
+                    }`}
+                  >
+                    {isSelected ? (breed.correct ? "✓ " : "✗ ") : ""}
+                    &quot;{breed.name}&quot;
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Output */}
+          <AnimatePresence>
+            {selected && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="border-t border-neutral-800/60 pt-4 space-y-2"
+              >
+                {isCorrect ? (
+                  <>
+                    <p className="text-green-400 text-[11px]">
+                      <span className="text-neutral-600">console.log(</span>
+                      &quot;✓ Correct! French Bulldog is the only valid answer.&quot;
+                      <span className="text-neutral-600">)</span>
+                    </p>
+                    <p className="text-neutral-600 text-[11px]">
+                      <span className="text-indigo-400">const</span>{" "}
+                      <span className="text-sky-300">secretPassage</span>{" "}
+                      <span className="text-neutral-500">=</span>{" "}
+                      <a
+                        href={adminUrl}
+                        className="text-indigo-400 underline underline-offset-2 hover:text-indigo-300 transition-colors"
+                      >
+                        &quot;{adminUrl}&quot;
+                      </a>
+                      <span className="text-neutral-500">; </span>
+                      <span className="text-neutral-700">// 🔓 unlocked</span>
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-red-400/80 text-[11px]">
+                    <span className="text-red-500/60">Error:</span>{" "}
+                    {wrongMsg}{" "}
+                    <button
+                      onClick={() => { setSelected(null); setWrongMsg(""); }}
+                      className="ml-2 text-neutral-600 underline underline-offset-2 hover:text-neutral-400 transition-colors"
+                    >
+                      retry
+                    </button>
+                  </p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Cursor blink */}
+          {!selected && (
+            <p className="text-indigo-400 text-[11px]">
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.8, repeat: Infinity, repeatType: "mirror" }}
+              >
+                █
+              </motion.span>
+            </p>
+          )}
+        </div>
+      </div>
+
+      <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-neutral-800">
+        Built with ☕ by SleepyLeo
+      </p>
+    </div>
   );
 }

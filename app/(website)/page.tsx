@@ -7,8 +7,7 @@ import { SkillsSection } from "@/components/sections/skills-section";
 import { ContactSection } from "@/components/sections/contact-section";
 import { IdeShell } from "@/components/ide-shell";
 import { getProjects, getTotalCommits, getProfile, getSkills } from "@/lib/actions";
-import { DogBreedQuizClient } from "@/components/dog-breed-quiz-client";
-import { SectionBar } from "@/components/section-bar";
+import { DogBreedSection } from "@/components/sections/dogbreed-section";
 
 export const revalidate = 3600;
 
@@ -56,14 +55,7 @@ export default async function Home() {
         about:     <Suspense fallback={null}><AboutData /></Suspense>,
         skills:    <Suspense fallback={null}><SkillsData /></Suspense>,
         contact:   <Suspense fallback={null}><ContactData /></Suspense>,
-        dogbreed:  (
-          <section id="dogbreed">
-            <SectionBar sectionId="dogbreed" filename="dogbreed.tsx" />
-            <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-6 py-10">
-              <DogBreedQuizClient adminUrl={adminUrl} />
-            </div>
-          </section>
-        ),
+        dogbreed:  <DogBreedSection adminUrl={adminUrl} />,
       }}
     />
   );

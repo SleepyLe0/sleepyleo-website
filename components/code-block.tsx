@@ -37,11 +37,12 @@ interface SkillData {
 }
 
 type SectionCodeProps =
-  | { section: "hero";     profile: ProfileData | null }
-  | { section: "projects"; projects: ProjectData[] }
-  | { section: "about";    profile: ProfileData | null }
-  | { section: "skills";   skills: SkillData[] }
-  | { section: "contact";  profile: ProfileData | null };
+  | { section: "hero";      profile: ProfileData | null }
+  | { section: "projects";  projects: ProjectData[] }
+  | { section: "about";     profile: ProfileData | null }
+  | { section: "skills";    skills: SkillData[] }
+  | { section: "contact";   profile: ProfileData | null }
+  | { section: "dogbreed" };
 
 // ── Serializers ──────────────────────────────────────────────────────────
 
@@ -179,6 +180,43 @@ function tokenize(line: string): Token[] {
   return tokens;
 }
 
+function serializeDogBreed(): string {
+  return `// ── dogbreed.tsx ─────────────────────────────
+// @desc  The most important file in this repo
+// @since always
+
+const breeds = [
+  "Golden Retriever",
+  "Husky",
+  "French Bulldog",  // ← correct ✓  (not up for debate)
+  "Poodle",
+] as const;
+
+type Breed = typeof breeds[number];
+
+function getBestBreed(): Breed {
+  return "French Bulldog";
+  // This is a scientific fact.
+}
+
+const quiz = {
+  question: "What's the best dog breed?",
+  answer:   getBestBreed(),
+  hint:     "Think small, snorty, and chronically unbothered.",
+} satisfies { question: string; answer: Breed; hint: string };
+
+// Runtime state
+const [selected, setSelected] = useState<Breed | null>(null);
+const isCorrect = selected === quiz.answer;
+
+// Secret reward unlocked on correct answer
+const secretPassage = isCorrect
+  ? process.env.ADMIN_URL  // 🔓
+  : null;
+
+export default quiz;`;
+}
+
 const tokenColors: Record<Token["type"], string> = {
   kw:    "text-indigo-400",
   str:   "text-green-300",
@@ -193,10 +231,11 @@ const tokenColors: Record<Token["type"], string> = {
 
 export function CodeBlock(props: SectionCodeProps) {
   const code = useMemo(() => {
-    if (props.section === "hero")     return serializeHero(props.profile);
-    if (props.section === "projects") return serializeProjects(props.projects);
-    if (props.section === "about")    return serializeAbout(props.profile);
-    if (props.section === "skills")   return serializeSkills(props.skills);
+    if (props.section === "hero")      return serializeHero(props.profile);
+    if (props.section === "projects")  return serializeProjects(props.projects);
+    if (props.section === "about")     return serializeAbout(props.profile);
+    if (props.section === "skills")    return serializeSkills(props.skills);
+    if (props.section === "dogbreed")  return serializeDogBreed();
     return serializeContact(props.profile);
   }, [props]);
 
