@@ -3,7 +3,6 @@
 import { useRef, useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { ProjectCard } from "@/components/project-card";
-import { ProjectRow } from "@/components/project-row";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
 import { SectionBar } from "@/components/section-bar";
@@ -125,25 +124,16 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
 
           {/* ── Projects listing ── */}
           {sorted.length > 0 ? (
-            <>
-              {/* Desktop: row list */}
-              <div className="hidden lg:block space-y-0.5">
-                {sorted.map((project) => (
-                  <ProjectRow key={project.id} project={project} />
-                ))}
-              </div>
-              {/* Mobile: card grid */}
-              <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
-                {sorted.map((project, index) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    index={index}
-                    featured={index === 0 && !!project.featured}
-                  />
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+              {sorted.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  index={index}
+                  featured={index === 0 && !!project.featured}
+                />
+              ))}
+            </div>
           ) : (
             <motion.div
               initial={{ opacity: 0 }}
