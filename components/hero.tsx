@@ -50,64 +50,42 @@ export function Hero({ profile }: HeroProps) {
       {viewMode === "code" ? (
         <CodeBlock section="hero" profile={profile} />
       ) : (
-        <div className="px-6 py-10 md:px-10 md:py-14">
+        <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-6 py-10 md:px-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12"
+          className="flex flex-col items-center gap-6 text-center"
         >
           {/* Photo */}
-          <div className="flex-shrink-0">
-            <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-white/10 md:h-28 md:w-28">
-              <Image
-                src="/gunnie.webp"
-                alt="SleepyLeo"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+          <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-white/10 md:h-28 md:w-28">
+            <Image
+              src="/gunnie.webp"
+              alt="SleepyLeo"
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
           {/* Text */}
-          <div className="flex-1">
+          <div className="flex flex-col items-center">
             <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.25em] text-neutral-600">
               {profile?.location ?? "Developer"}
             </p>
             <h1 className="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl">
               {profile?.name ?? "SleepyLeo"}
             </h1>
-            <div className="mb-4 text-sm text-neutral-500">
+            <div className="mb-6 text-sm text-neutral-500">
               I&apos;m a{" "}
               <FlipWords
                 words={words}
                 className="font-semibold text-indigo-400"
               />
             </div>
-            <p className="mb-6 max-w-md text-sm leading-relaxed text-neutral-500">
-              {profile?.bio ??
-                "Building things with TypeScript, Next.js and an unreasonable amount of matcha."}
-            </p>
-
-            {/* Stats */}
-            <div className="mb-6 flex gap-6">
-              {[
-                { value: "10+", label: "Projects Built" },
-                { value: "∞",   label: "Cups of Matcha" },
-                { value: "Most", label: "Bugs Fixed" },
-              ].map(({ value, label }) => (
-                <div key={label}>
-                  <div className="text-lg font-bold text-white">{value}</div>
-                  <div className="font-mono text-[9px] uppercase tracking-wider text-neutral-600">
-                    {label}
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <Button
                 onClick={() => scrollTo("projects")}
                 className="bg-indigo-600 text-white hover:bg-indigo-500"
