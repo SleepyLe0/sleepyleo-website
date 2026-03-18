@@ -165,12 +165,12 @@ function IdeShellInner({ profile, sections, projects, skills }: IdeShellProps) {
           </div>
 
           {/* Section scroll container */}
-          <div className="flex-1 overflow-y-auto min-h-0 flex flex-col">
+          <div className="flex-1 overflow-y-auto min-h-0">
             {/* SectionBar — lives here once for all sections */}
             {openTabs.length > 0 && <SectionBar sectionId={activeSection} />}
 
             {openTabs.length === 0 ? (
-              <div className="flex flex-1 flex-col items-center justify-center gap-6 select-none">
+              <div className="flex min-h-[calc(100svh-9rem)] flex-col items-center justify-center gap-6 select-none">
                 <div className="text-5xl opacity-20">⚛</div>
                 <div className="text-center">
                   <p className="font-mono text-[13px] text-neutral-600">No files open</p>
@@ -191,13 +191,13 @@ function IdeShellInner({ profile, sections, projects, skills }: IdeShellProps) {
                 </div>
               </div>
             ) : (
-              <div className="flex-1 relative">
+              <>
                 {(Object.entries(sections) as [SectionId, ReactNode][]).map(([id, content]) => (
-                  <div key={id} className={activeSection === id ? "h-full" : "hidden"}>
+                  <div key={id} className={activeSection === id ? "block" : "hidden"}>
                     {content}
                   </div>
                 ))}
-              </div>
+              </>
             )}
           </div>
         </div>

@@ -40,11 +40,11 @@ export function Hero({ profile }: HeroProps) {
   const viewMode = getViewMode("home");
 
   return (
-    <section id="home" className="flex h-full flex-col">
+    <section id="home">
       {viewMode === "code" ? (
         <CodeBlock section="hero" profile={profile} />
       ) : (
-        <div className="flex flex-1 items-center justify-center px-6 md:px-10">
+        <div className="flex min-h-[calc(100svh-9rem)] items-center justify-center px-6 md:px-10">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
