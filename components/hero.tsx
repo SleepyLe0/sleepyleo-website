@@ -36,12 +36,8 @@ const words = [
 ];
 
 export function Hero({ profile }: HeroProps) {
-  const { getViewMode } = useIde();
+  const { getViewMode, navigateTo } = useIde();
   const viewMode = getViewMode("home");
-
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   return (
     <section id="home" className="flex h-full flex-col">
@@ -85,21 +81,21 @@ export function Hero({ profile }: HeroProps) {
               {/* CTAs */}
               <div className="flex flex-wrap justify-center gap-3">
                 <Button
-                  onClick={() => scrollTo("projects")}
+                  onClick={() => navigateTo("projects")}
                   className="bg-indigo-600 text-white hover:bg-indigo-500"
                 >
                   View Projects <ArrowRight size={14} className="ml-1" />
                 </Button>
                 {profile?.github && (
                   <Button variant="outline" asChild>
-                    <a href={profile.github} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://github.com/${profile.github}`} target="_blank" rel="noopener noreferrer">
                       <Github size={14} className="mr-1" /> GitHub
                     </a>
                   </Button>
                 )}
                 {profile?.linkedin && (
                   <Button variant="outline" asChild>
-                    <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://linkedin.com/in/${profile.linkedin}`} target="_blank" rel="noopener noreferrer">
                       <Linkedin size={14} className="mr-1" /> LinkedIn
                     </a>
                   </Button>
