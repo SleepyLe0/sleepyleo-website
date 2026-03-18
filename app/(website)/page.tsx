@@ -9,7 +9,7 @@ import { IdeShell } from "@/components/ide-shell";
 import { getProjects, getTotalCommits, getProfile, getSkills } from "@/lib/actions";
 import { DogBreedSection } from "@/components/sections/dogbreed-section";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 async function getProfileData() {
   const result = await getProfile();
