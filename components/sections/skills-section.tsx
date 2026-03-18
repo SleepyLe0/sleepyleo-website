@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
-import { SectionBar } from "@/components/section-bar";
 
 interface Skill {
   id: string;
@@ -83,7 +82,6 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
   return (
     <TooltipProvider delayDuration={200}>
       <section id="skills">
-        <SectionBar sectionId="skills" filename="skills.tsx" />
         {getViewMode("skills") === "code" ? (
           <CodeBlock section="skills" skills={skills} />
         ) : (

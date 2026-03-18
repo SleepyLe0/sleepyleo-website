@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export const FlipWords = ({
@@ -13,85 +12,44 @@ export const FlipWords = ({
   duration?: number;
   className?: string;
 }) => {
-  const [currentWord, setCurrentWord] = useState(words[0]);
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [phase, setPhase] = useState<"typing" | "pausing" | "deleting">("typing");
 
-  const startAnimation = useCallback(() => {
-    const word = words[words.indexOf(currentWord) + 1] || words[0];
-    setCurrentWord(word);
-    setIsAnimating(true);
-  }, [currentWord, words]);
+  const currentWord = words[wordIndex];
 
   useEffect(() => {
-    if (!isAnimating)
-      setTimeout(() => {
-        startAnimation();
-      }, duration);
-  }, [isAnimating, duration, startAnimation]);
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (phase === "typing") {
+      if (displayed.length < currentWord.length) {
+        timeout = setTimeout(() => {
+          setDisplayed(currentWord.slice(0, displayed.length + 1));
+        }, 60);
+      } else {
+        timeout = setTimeout(() => setPhase("pausing"), duration);
+      }
+    } else if (phase === "pausing") {
+      timeout = setTimeout(() => setPhase("deleting"), 400);
+    } else if (phase === "deleting") {
+      if (displayed.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, 35);
+      } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setWordIndex((i) => (i + 1) % words.length);
+        setPhase("typing");
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [phase, displayed, currentWord, duration, words.length]);
 
   return (
-    <AnimatePresence
-      onExitComplete={() => {
-        setIsAnimating(false);
-      }}
-    >
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 10,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 100,
-          damping: 10,
-        }}
-        exit={{
-          opacity: 0,
-          y: -40,
-          x: 40,
-          filter: "blur(8px)",
-          scale: 2,
-          position: "absolute",
-        }}
-        className={cn(
-          "z-10 inline-block relative text-left text-neutral-900 dark:text-neutral-100 px-2",
-          className
-        )}
-        key={currentWord}
-      >
-        {currentWord.split(" ").map((word, wordIndex) => (
-          <motion.span
-            key={word + wordIndex}
-            initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              delay: wordIndex * 0.3,
-              duration: 0.3,
-            }}
-            className="inline-block whitespace-nowrap"
-          >
-            {word.split("").map((letter, letterIndex) => (
-              <motion.span
-                key={word + letterIndex}
-                initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{
-                  delay: wordIndex * 0.3 + letterIndex * 0.05,
-                  duration: 0.2,
-                }}
-                className="inline-block"
-              >
-                {letter}
-              </motion.span>
-            ))}
-            <span className="inline-block">&nbsp;</span>
-          </motion.span>
-        ))}
-      </motion.div>
-    </AnimatePresence>
+    <span className={cn("inline-block", className)}>
+      {displayed}
+      <span className="ml-0.5 inline-block w-0.5 animate-pulse bg-current align-middle">&nbsp;</span>
+    </span>
   );
 };

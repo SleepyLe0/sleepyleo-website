@@ -6,7 +6,6 @@ import { GraduationCap, MapPin, Zap, Leaf, CheckCircle2, ChevronDown } from "luc
 import ReactMarkdown from "react-markdown";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
-import { SectionBar } from "@/components/section-bar";
 
 interface TimelineItem {
   year: string;
@@ -91,7 +90,6 @@ export function AboutSection({ profile }: AboutSectionProps) {
 
   return (
     <section id="about">
-      <SectionBar sectionId="about" filename="about.tsx" />
       {getViewMode("about") === "code" ? (
         <CodeBlock section="about" profile={profile} />
       ) : (

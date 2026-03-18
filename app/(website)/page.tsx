@@ -42,13 +42,21 @@ async function ContactData() {
 }
 
 export default async function Home() {
-  const profile = await getProfileData();
+  const [profile, projectsResult, skillsResult] = await Promise.all([
+    getProfileData(),
+    getProjects(),
+    getSkills(),
+  ]);
 
+  const projects = projectsResult.success ? projectsResult.data : [];
+  const skills = skillsResult.success ? skillsResult.data : [];
   const adminUrl = process.env.ADMIN_URL ?? "http://localhost:3001";
 
   return (
     <IdeShell
       profile={profile}
+      projects={projects}
+      skills={skills}
       sections={{
         home:      <Hero profile={profile} />,
         projects:  <Suspense fallback={null}><ProjectsData /></Suspense>,

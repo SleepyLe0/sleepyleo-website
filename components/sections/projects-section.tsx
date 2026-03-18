@@ -5,7 +5,6 @@ import { motion } from "motion/react";
 import { ProjectCard } from "@/components/project-card";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
-import { SectionBar } from "@/components/section-bar";
 
 interface Project {
   id: string;
@@ -77,7 +76,6 @@ export function ProjectsSection({ projects, totalCommits }: ProjectsSectionProps
 
   return (
     <section id="projects">
-      <SectionBar sectionId="projects" filename="projects.tsx" />
 
       {getViewMode("projects") === "code" ? (
         <CodeBlock section="projects" projects={projects} />

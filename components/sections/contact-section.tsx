@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import { Mail, Github, Linkedin, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useIde } from "@/components/ide-context";
 import { CodeBlock } from "@/components/code-block";
-import { SectionBar } from "@/components/section-bar";
 
 interface Profile {
   id: string;
@@ -67,7 +66,6 @@ export function ContactSection({ profile }: ContactSectionProps) {
 
   return (
     <section id="contact">
-      <SectionBar sectionId="contact" filename="contact.tsx" />
       {getViewMode("contact") === "code" ? (
         <CodeBlock section="contact" profile={profile} />
       ) : (

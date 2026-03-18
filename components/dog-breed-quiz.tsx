@@ -76,7 +76,7 @@ export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
           <div>
             <p className="text-neutral-500 text-[11px] mb-3">
               <span className="text-green-400">▶</span> Select answer:{" "}
-              <span className="text-neutral-600">// choose wisely</span>
+              <span className="text-neutral-600">{'// choose wisely'}</span>
             </p>
             <div className="flex flex-wrap gap-2">
               {breeds.map((breed) => {
@@ -132,7 +132,7 @@ export function DogBreedQuiz({ adminUrl }: { adminUrl: string }) {
                         &quot;{adminUrl}&quot;
                       </a>
                       <span className="text-neutral-500">; </span>
-                      <span className="text-neutral-700">// 🔓 unlocked</span>
+                      <span className="text-neutral-700">{'// 🔓 unlocked'}</span>
                     </p>
                   </>
                 ) : (
