@@ -97,10 +97,20 @@ jobs:
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          ssh "$SERVER_HOST" \
-            "cd sleepyleo \
-              && docker compose -f docker-compose.prod.yml pull app \
-              && docker compose -f docker-compose.prod.yml up -d --no-deps app"
+          ssh "$SERVER_HOST" 'bash -s' <<'REMOTE'
+          set -eu
+          cd sleepyleo
+          docker compose -f docker-compose.prod.yml pull app
+          docker compose -f docker-compose.prod.yml up -d --no-deps app
+          for attempt in $(seq 1 30); do
+            if docker compose -f docker-compose.prod.yml exec -T app bun -e 'const response = await fetch("http://127.0.0.1:3000", { signal: AbortSignal.timeout(5000) }); process.exit(response.ok ? 0 : 1)'; then
+              exit 0
+            fi
+            sleep 3
+          done
+          docker compose -f docker-compose.prod.yml logs --tail=50 app
+          exit 1
+          REMOTE
 
       - name: Notify Discord
         if: always()

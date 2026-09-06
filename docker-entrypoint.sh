@@ -1,8 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "Running database migrations..."
-bunx prisma db push --url "$DATABASE_URL" --accept-data-loss
-
+# Schema changes must be applied explicitly before deploying a release that needs
+# them. Starting the web server must not download a CLI or mutate production data.
 echo "Starting server..."
 exec bun server.js

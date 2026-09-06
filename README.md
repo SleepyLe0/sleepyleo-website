@@ -93,3 +93,11 @@ The Docker image includes cloudflared for SSH tunneling support.
 ## License
 
 MIT
+
+### Production startup
+
+The website entrypoint starts the server only. Apply reviewed schema changes as a
+separate release step before deploying code that requires them; never use
+`db push --accept-data-loss` as an automatic container startup operation.
+UI-only releases do not require a database update. CI verifies that the deployed
+website responds successfully before marking deployment complete.
